@@ -1,20 +1,73 @@
 <html>
 <head>
-<title>Bridge Scorepad</title>
+<title>Bridge Scorepad Project</title>
 </head>
 <h2>Bridge Scorepad</h2>
 <body>
 <p><a href="scorepad.html">This</a>
 is an attempt to create a web page for keeping score
-during a bridge match.  The supported scoring systems are:
-<ul>
-<li>duplicate,</li>
-<li>Chicago and</li>
-<li>rubber.</li>
+during a bridge match.
 <p>
-The page is styled for mobile devices since they are more
-likely to be available at a bridge match.
-The target devices are iPad Air (5th generation) and iPhone 15
-because those are the devices I have.
+The supported scoring systems are:
+<i>duplicate</i>, <i>Chicago</i> and
+<i>rubber</i>.
+Selecting a different scoring system
+in the combo box at the top will clear all scores, including
+the accumulated sum for all matches at the bottom.
+<p>
+Player names may (optionally) be set by entering them in the
+text fields on the right.
+Dealer may (optionally) be changed by clicking the radio button
+next to the player name.
+<p>
+The <b>Contract</b> and <b>Result</b> input fields are for entering
+information about a hand.  The final contract should be entered in
+the <b>Contract</b> field using the common (case-independent) shorthand:
+<blockquote>
+{level}{suit}{double}{declarer}
+</blockquote>
+where
+<blockquote>
+<dl>
+<dt>level</dt>
+<dd>number of tricks bid (single digit)</dd>
+<dt>suit</dt>
+<dd>trump suit or no trump (single letter:
+<b>S</b>, <b>H</b>, <b>D</b>, <b>C</b> or <b>N</b>)</dd>
+<dt>double</dt>
+<dd>double or redouble (double: <b>x</b>, redouble: <b>xx</b>)</dd>
+<dt>declarer</dt>
+<dd>declarer seat (single letter: <b>N</b>, <b>E</b>, <b>S</b>, <b>W</b>)</dd>
+</dl>
+</blockquote>
+<p>
+When a valid contract is entered, the input fields is updated
+to use the "normalized" form of the input values (<i>e.g.</i>,
+capitalized suit and declarer seat).  The <b>Result</b>
+input field is also enabled for entering the hand outcome.
+<p>
+The result of the hand should be entered in the <b>Result</b>
+field using a signed number.  If the contract was made, the
+number of tricks taken (over book) is entered as a positive number.
+For example, 4&spades; making 5 is entered as either "+5"
+or just "5".  If the contract was set, the number of undertricks
+is entered as a negative number.  For example, 4&diams; down 2
+is entered as "-2".
+When a result is entered, an alert will be displayed showing the
+points scored.  For successful contracts, a breakdown of the
+total points scored is given.
+If the hand results in the end of a match, an additional alert
+is displayed.  The final match scores are added to the
+accumulated scores at the bottom, and the match scorepad
+is cleeared.
+<h3>Known Issues</h3>
+<p>
+The web page is styled to display all elements without scrolling
+in portrait mode (long edge up-and-down).
+That works well for devices with sufficient screen space, but may
+malfunction if there is not enough real estate to display
+everything.  I find that even the iPhone 15 screen is too small
+for practical use, especially when browsers auto-zoom when input
+elements are selected.
 </body>
 </html>
