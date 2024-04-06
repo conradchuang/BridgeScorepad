@@ -1,3 +1,5 @@
+/* vim: set ai et sw=4 sts=4: */
+
 ScoreSystem = "Duplicate";   /* One of Duplicate, Chicago, Rubber */
 SuitName = {
     N: "N",
@@ -79,10 +81,20 @@ function update_dealer() {
         players[i].classList.remove("dealing");
     let te = document.getElementById(seat + "-dealer");
     te.classList.add("dealing");
-    /* Clear any displayed contracts */
-    let contracts = document.getElementsByClassName("contract");
-    for (let i = 0; i < contracts.length; i++)
-        contracts[i].classList.remove("declaring");
+    /* Clear any displayed contracts and show part scores */
+    let ps = part_scores();
+    let labels = { "north":"", "east":"", "south":"", "west":"" };
+    if (ps.ns > 0) {
+        labels["north"] = ps.ns;
+        labels["south"] = ps.ns;
+    }
+    if (ps.ew > 0) {
+        labels["east"] = ps.ew;
+        labels["west"] = ps.ew;
+    }
+    labels[seat] = "";
+    for (let seat in labels)
+        document.getElementById(seat + "-contract").innerHTML = labels[seat];
     /* Set vulnerability.
      * For Chicago and duplicate scoring, vulnerability
      * depends on number of hands dealt */
@@ -132,14 +144,12 @@ function update_contract(ev) {
     let dealing = document.getElementsByClassName("dealing")
     for (let de of dealing)    /* should be exactly zero or one item */
         de.classList.remove("dealing");
-    let declaring = document.getElementsByClassName("declaring")
-    for (let de of declaring)    /* should be exactly zero or one item */
-        de.classList.remove("declaring");
     /* Display final contract on board */
     let seat = SeatAbbr[contract_details.declarer];
-    let ce = document.getElementById(seat + "-contract");
-    ce.classList.add("declaring");
-    ce.innerHTML = html_contract(contract_details, false);
+    for (let s in NextSeat) {
+        let ce = document.getElementById(s + "-contract");
+        ce.innerHTML = s == seat ? html_contract(contract_details, false) : "";
+    }
     /* Disable contract input and move focus to result input field */
     document.getElementById("input-result").focus();
     let result = document.getElementById("input-result");
@@ -279,14 +289,18 @@ function undo_above_score(state) {
     state.row.remove();
 }
 
-function part_score(side) {
+function part_scores() {
     let part_scores = {ns:0, ew:0};
     for (let result of HandResults) {
         part_scores[result.winning_side] += result.score_below;
         if (part_scores[result.winning_side] >= 100)
             part_scores = {ns:0, ew:0};
     }
-    return part_scores[side];
+    return part_scores;
+}
+
+function part_score(side) {
+    return part_scores()[side];
 }
 
 function update_scorepad(contract_details, result) {

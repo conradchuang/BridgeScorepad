@@ -1,3 +1,5 @@
+/* vim: set ai et sw=4 sts=4: */
+
 html {
     margin: 0px;
     padding: 0px;
@@ -86,10 +88,6 @@ input, select {
 }
 .contract {
     font-size: 1.3vw;
-    visibility: hidden;
-}
-.declaring {
-    visibility: visible;
 }
 #system {
     font-size:20pt;
