@@ -168,7 +168,8 @@ function clear_scorepad() {
     clear_section("ew-above");
     clear_section("ew-below");
     HandResults = [];
-    Vulnerability = { ns: false, ew: false }
+    set_vulnerability("ns", false);
+    set_vulnerability("ew", false);
     BelowRows = [];
     NextRow = { ns: 0, ew: 0 };
 }
@@ -403,7 +404,7 @@ function update_scorepad(contract_details, result) {
                         game_bonus = 700;
                     end_of_match = true;
                 } else {
-                    Vulnerability[side] = true;
+                    set_vulnerability(side, true);
                 }
                 draw_line = true;
             }
@@ -610,13 +611,14 @@ function input_undo() {
         undo_below_score(last_result.state_score_below);
     /* Recompute vulnerability if necessary */
     if (ScoreSystem == "Rubber") {
-        Vulnerability = { ns: false, ew: false }
+        set_vulnerability("ns", false);
+        set_vulnerability("ew", false);
         let below_scores = {ns:0, ew:0};
         for (let result of HandResults) {
             below_scores[result.winning_side] += result.score_below;
             if (below_scores[result.winning_side] >= 100) {
                 below_scores = {ns:0, ew:0};
-                Vulnerability[result.winning_side] = true;
+                set_vulnerability(result.winning_side, true);
             }
         }
     }
