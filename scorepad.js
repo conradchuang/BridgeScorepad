@@ -48,7 +48,7 @@ NextRow = { ns: 0, ew: 0 };
 REContract = /([1234567][NSHDC]X{0,2})([NESW])/;
 REContractDetails = /([1234567])([NSHDC])(X{0,2})([NESW])/;
 /* Result is of form "[+-]#" */
-REResult = /([-+])(\d+)/;
+REResult = /([-+]?)(\d+)/;
 
 function set_vulnerability(side, onoff) {
     let players = document.getElementsByClassName(side);
@@ -190,8 +190,12 @@ function parse_result(s) {
     let ns = s.replace(/\s/g, '').toUpperCase();
     /* Contract is of form (level suit [double] [redouble] seat) */
     let parts = ns.match(REResult);
+    console.log(s);
+    console.log(parts);
     if (parts == null)
         return null;
+    if (parts[1] == "")
+        parts[1] = "+";
     return { whole: parts[0],
              sign: parts[1],
              value: parts[2] }
