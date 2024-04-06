@@ -70,7 +70,7 @@ input, select {
     fill: none;
 }
 .vulnerable {
-    fill: yellow;
+    fill: lemonchiffon;
 }
 .player-name {
     font-size: 6pt;
