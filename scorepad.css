@@ -3,6 +3,8 @@
 html {
     margin: 0px;
     padding: 0px;
+    font-size: 16px;        /* To prevent autozoom on iOS! */
+                             * See https://weblog.west-wind.com/posts/2023/Apr/17/Preventing-iOS-Safari-Textbox-Zooming */
 }
 body {
     margin: 0px;
@@ -101,7 +103,7 @@ input, select {
     text-align: right;
     font-size:16pt;
     font-weight: bold;
-    width: 3.2rem;
+    width: 4rem;
     display: inline-block;
 }
 .input-dealing {
