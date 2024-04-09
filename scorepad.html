@@ -223,11 +223,34 @@
         </table>
     </div>
 </div>
-<dialog id="eom-dialog" class="eom-dialog">
-    <div id="eom-content" class="eom-content">
+<dialog id="alert-dialog" class="dialog">
+    <div id="alert-content" class="dialog-content">
+        <p id="alert-text"></p>
+        <div class="dialog-buttons">
+            <input type="button" class="dialog-button"
+                   id="alert-close" value="Okay" autofocus/>
+        </div>
+    </div>
+</dialog>
+<dialog id="confirm-dialog" class="dialog">
+    <div id="confirm-content" class="dialog-content">
+        <form method="dialog">
+            <p id="confirm-text"></p>
+            <div class="dialog-buttons">
+                <input type="submit" class="dialog-button"
+                       id="confirm-no" value="No"/>
+                <input type="submit" class="dialog-button"
+                       id="confirm-yes" value="Yes" autofocus/>
+            </div>
+        </form>
+    </div>
+</dialog>
+<dialog id="eom-dialog" class="dialog">
+    <div id="eom-content" class="dialog-content">
+        <h2>End of Match</h2>
         <p id="eom-text"></p>
-        <div class="eom-buttons">
-            <input type="button" class="eom-button"
+        <div class="dialog-buttons">
+            <input type="button" class="dialog-button"
                    id="eom-close" value="Okay" autofocus/>
         </div>
     </div>

@@ -65,7 +65,7 @@ function get_player_seat(id) {
     return id.split("-")[1];
 }
 
-function update_name() {
+function update_name(ev) {
     /* this = element triggering event */
     let name = this.value || "";
     let seat = get_player_seat(this.id);
@@ -82,17 +82,20 @@ function update_dealer() {
     let te = document.getElementById(seat + "-dealer");
     te.classList.add("dealing");
     /* Clear any displayed contracts and show part scores */
-    let ps = part_scores();
     let labels = { "north":"", "east":"", "south":"", "west":"" };
-    if (ps.ns > 0) {
-        labels["north"] = ps.ns;
-        labels["south"] = ps.ns;
+    if (ScoreSystem != "Duplicate") {
+        /* Duplicate scoring does not accumulate below-line points */
+        let ps = part_scores();
+        if (ps.ns > 0) {
+            labels["north"] = ps.ns;
+            labels["south"] = ps.ns;
+        }
+        if (ps.ew > 0) {
+            labels["east"] = ps.ew;
+            labels["west"] = ps.ew;
+        }
+        labels[seat] = "";
     }
-    if (ps.ew > 0) {
-        labels["east"] = ps.ew;
-        labels["west"] = ps.ew;
-    }
-    labels[seat] = "";
     for (let seat in labels)
         document.getElementById(seat + "-contract").innerHTML = labels[seat];
     /* Set vulnerability.
@@ -135,8 +138,7 @@ function update_contract(ev) {
     ev.preventDefault();
     let contract_details = parse_contract_details(this.value);
     if (contract_details == null) {
-        alert_show("That is not a valid contract.");
-        document.getElementById("input-contract").focus();
+        alert_show("That is not a valid contract.", focus_on_contract);
         return;
     }
     this.value = contract_details.whole;
@@ -151,7 +153,6 @@ function update_contract(ev) {
         ce.innerHTML = s == seat ? html_contract(contract_details, false) : "";
     }
     /* Disable contract input and move focus to result input field */
-    document.getElementById("input-result").focus();
     let result = document.getElementById("input-result");
     result.value = "";
     result.disabled = false;
@@ -190,8 +191,6 @@ function parse_result(s) {
     let ns = s.replace(/\s/g, '').toUpperCase();
     /* Contract is of form (level suit [double] [redouble] seat) */
     let parts = ns.match(REResult);
-    console.log(s);
-    console.log(parts);
     if (parts == null)
         return null;
     if (parts[1] == "")
@@ -212,7 +211,7 @@ function html_contract(contract_details, include_declarer) {
 
 function contract_label(deal_index, contract_details, result_info) {
     return (deal_index+1) + ": " + html_contract(contract_details, true) +
-           result_info.whole;
+           result_info.sign + result_info.value;
 }
 
 function make_side_row(side) {
@@ -349,6 +348,8 @@ function update_scorepad(contract_details, result) {
     let game_bonus = 0;
     let slam_bonus = 0;
     let end_of_match = false;
+    if (ScoreSystem == "Duplicate" || ScoreSystem == "Chicago")
+        end_of_match = deal_index % 4 == 3;
     let num_over = tricks - level;
     if (tricks > 0) {
         /* Contract and overtricks */
@@ -384,12 +385,10 @@ function update_scorepad(contract_details, result) {
                 game_bonus = vulnerable ? 500 : 300;
             else
                 game_bonus = 50;
-            end_of_match = deal_index % 4 == 3;
         } else if (ScoreSystem == "Chicago") {
             /* vulnerable game: 500, non-vul game: 300,
              * part score: 50, but only on fourth deal */
             let game_score = contract + part_score(side);
-            end_of_match = deal_index % 4 == 3;
             if (game_score >= 100) {
                 game_bonus = vulnerable ? 500 : 300;
                 /* Part score wiped out for both sides */
@@ -428,33 +427,13 @@ function update_scorepad(contract_details, result) {
         if (game_bonus > 0)
             breakdown.push("game: " + game_bonus);
         let breakdown_msg = breakdown.join(", ")
-        let msg = SideName[side] + " scores " + score_total + "\n" +
-                  desc + " making " + tricks +
-                  "\n(" + breakdown_msg + ")";
-        if (!confirm_show(msg))
-            return false;
-        /* Display on score pad */
-        hand_result.winning_side = side;
-        hand_result.score_total = score_total;
-        hand_result.score_above = score_above;
-        hand_result.score_below = contract;
-        hand_result.state_score_above = null;
-        hand_result.state_score_below = null;
-        if (ScoreSystem == "Duplicate") {
-            hand_result.state_score_below = add_below_score(side, label,
-                                                            score_total, false,
-                                                            breakdown_msg);
-        } else {
-            hand_result.state_score_below = add_below_score(side, label,
-                                                            contract,
-                                                            draw_line,
-                                                            breakdown_msg);
-            if (score_above > 0) {
-                hand_result.state_score_above = add_above_score(side, label,
-                                                                score_above,
-                                                                breakdown_msg);
-            }
-        }
+        let msg = desc + " making " + tricks + "<br/>" +
+                  SideName[side] + " scores " + score_total + "<br/>" +
+                  breakdown_msg;
+        confirm_show(msg, contract_made.bind(null, hand_result, side, contract,
+                                             score_above, score_total, label,
+                                             breakdown_msg, draw_line,
+                                             end_of_match), null);
     } else {
         /* Compute undertricks score */
         if (vulnerable) {
@@ -509,39 +488,84 @@ function update_scorepad(contract_details, result) {
         undertricks = -undertricks;
         let other_side = OtherSide[side];
         /* Show score and ask user if correct */
-        let msg = SideName[other_side] + " scores " + undertricks + "\n" +
-                  desc + " down " + (-tricks);
+        let msg = desc + " down " + (-tricks) + "<br/>" +
+                  SideName[other_side] + " scores " + undertricks;
         let breakdown_msg = "undertricks: " + undertricks;
-        if (!confirm_show(msg))
-            return false;
-        /* Display on score pad */
-        hand_result.winning_side = other_side;
-        hand_result.score_total = undertricks;
-        hand_result.score_above = undertricks;
-        hand_result.score_below = 0;
-        hand_result.state_score_below = null;
+        confirm_show(msg, contract_down.bind(null, hand_result, other_side,
+                                             undertricks, label, breakdown_msg,
+                                             end_of_match), null);
+    }
+}
+
+function contract_made(hand_result, side, contract, score_above, score_total,
+                       label, breakdown_msg, draw_line, end_of_match) {
+    /* Display on score pad */
+    hand_result.winning_side = side;
+    hand_result.score_total = score_total;
+    hand_result.score_above = score_above;
+    hand_result.score_below = contract;
+    hand_result.state_score_above = null;
+    hand_result.state_score_below = null;
+    if (ScoreSystem == "Duplicate") {
+        hand_result.state_score_below = add_below_score(side, label,
+                                                        score_total, false,
+                                                        breakdown_msg);
+    } else {
+        hand_result.state_score_below = add_below_score(side, label,
+                                                        contract, draw_line,
+                                                        breakdown_msg);
+        if (score_above > 0) {
+            hand_result.state_score_above = add_above_score(side, label,
+                                                            score_above,
+                                                            breakdown_msg);
+        }
+    }
+    HandResults.push(hand_result);
+    if (end_of_match)
+        end_match();
+    else
+        next_hand();
+}
+
+function contract_down(hand_result, other_side, undertricks, label,
+                       breakdown_msg, end_of_match) {
+    /* Display on score pad */
+    hand_result.winning_side = other_side;
+    hand_result.score_total = undertricks;
+    hand_result.score_above = undertricks;
+    hand_result.score_below = 0;
+    hand_result.state_score_below = null;
+    if (ScoreSystem == "Duplicate") {
+        hand_result.state_score_below = add_below_score(other_side, label,
+                                                        undertricks, false,
+                                                        breakdown_msg);
+    } else {
         hand_result.state_score_above = add_above_score(other_side, label,
                                                         undertricks,
                                                         breakdown_msg);
     }
     HandResults.push(hand_result);
-    if (end_of_match) {
-        let final = {ns:0, ew:0};
-        let msg;
-        for (let hand_result of HandResults)
-            final[hand_result.winning_side] += hand_result.score_total;
-        if (final.ns > final.ew) {
-            msg = SideName["ns"] + " wins:" + final.ns + "-" + final.ew;
-        } else if (final.ns < final.ew) {
-            msg = SideName["ew"] + " wins:" + final.ew + "-" + final.ns;
-        } else {
-            msg = "It's a tie";
-        }
-        TotalScore.ns += final.ns;
-        TotalScore.ew += final.ew;
-        eom_show(msg);
+    if (end_of_match)
+        end_match();
+    else
+        next_hand();
+}
+
+function end_match(end_of_match) {
+    let final = {ns:0, ew:0};
+    let msg;
+    for (let hand_result of HandResults)
+        final[hand_result.winning_side] += hand_result.score_total;
+    if (final.ns > final.ew) {
+        msg = SideName["ns"] + " wins:" + final.ns + "-" + final.ew;
+    } else if (final.ns < final.ew) {
+        msg = SideName["ew"] + " wins:" + final.ew + "-" + final.ns;
+    } else {
+        msg = "It's a tie";
     }
-    return true;
+    TotalScore.ns += final.ns;
+    TotalScore.ew += final.ew;
+    eom_show(msg);
 }
 
 function update_result(ev) {
@@ -550,26 +574,24 @@ function update_result(ev) {
     ev.preventDefault();
     let result_info = parse_result(this.value);
     if (result_info == null) {
-        alert_show("That is not a valid result.");
+        alert_show("That is not a valid result.", null);
         return;
     }
     /* Update score pad */
     let ce = document.getElementById("input-contract");
     try {
-        if (!update_scorepad(parse_contract_details(ce.value), result_info)) {
-            alert_show("That is not a valid result.");
-            document.getElementById("input-result").focus();
-            return;
-        }
+        update_scorepad(parse_contract_details(ce.value), result_info);
     } catch (e) {
         if (e instanceof RangeError) {
-            alert_show(e.message);
-            document.getElementById("input-result").focus();
+            alert_show(e.message, focus_on_result);
             return;
         } else {
             throw e;
         }
     }
+}
+
+function next_hand() {
     /* Show dealer for next hand */
     let dealings = document.getElementsByName("dealing");
     let cur_seat = null;
@@ -601,12 +623,13 @@ function update_result(ev) {
 }
 
 function input_undo() {
-    if (HandResults.length == 0) {
-        alert_show("There are no results to undo");
-        return;
-    }
-    if (!confirm_show("Remove last contract score?"))
-        return;
+    if (HandResults.length == 0)
+        alert_show("There are no results to undo", null);
+    else
+        confirm_show("Remove last contract score?", undo, null);
+}
+
+function undo() {
     /* Remove last result */
     let last_result = HandResults.pop();
     if (last_result.state_score_above != null)
@@ -643,9 +666,7 @@ function input_undo() {
 }
 
 function input_clear() {
-    if (!confirm_show("Clear all scores, including totals?"))
-        return;
-    clear_all();
+    onfirm_show("Clear all scores, including totals?", clear_all, null);
 }
 
 function clear_all() {
@@ -664,10 +685,9 @@ function clear_all() {
 }
 
 function change_system() {
-    if (!confirm_show("Switch to " + this.value + " scoring?\n" +
-                      "Current scores will be erased.)"))
-        return;
-    set_system(this.value);
+    confirm_show("Switch to " + this.value + " scoring?<br/>" +
+                 "Current scores will be erased.)",
+                 set_system.bind(this, this.value), null);
 }
 
 function set_system(system) {
@@ -683,7 +703,7 @@ function set_system(system) {
         below.classList.remove("below-line-row-duplicate");
         below.classList.add("below-line-row");
     } else {
-        alert_show("Unsupported scoring system: " + system);
+        alert_show("Unsupported scoring system: " + system, null);
         return;
     }
     clear_all();
@@ -695,28 +715,70 @@ function update_totals() {
     document.getElementById("score-ew-total").innerHTML = TotalScore.ew;
 }
 
-function alert_show(msg) {
-    let div = document.createElement("div");
-    div.innerHTML = msg;
-    return alert(div.firstChild.nodeValue);
+function focus_on_contract() {
+    document.getElementById("input-contract").focus();
 }
 
-function confirm_show(msg) {
-    let div = document.createElement("div");
-    div.innerHTML = msg;
-    return confirm(div.firstChild.nodeValue);
+function focus_on_result() {
+    document.getElementById("input-result").focus();
+}
+
+function alert_show(msg, cb) {
+    console.log("alert_show");
+    document.getElementById("alert-text").innerHTML = msg;
+    let d = document.getElementById("alert-dialog");
+    d.callback = cb;
+    d.showModal();
+}
+
+function alert_hide(ev) {
+    ev.preventDefault();
+    let d = document.getElementById("alert-dialog");
+    d.close();
+    if (d.callback) {
+        d.callback();
+        d.callback = null;
+    }
+}
+
+function confirm_show(msg, cb_yes, cb_no) {
+    document.getElementById("confirm-text").innerHTML = msg;
+    let d = document.getElementById("confirm-dialog");
+    d.callback_yes = cb_yes;
+    d.callback_no = cb_no;
+    d.showModal();
+}
+
+function confirm_yes() {
+    let d = document.getElementById("confirm-dialog");
+    d.close();
+    if (d.callback_yes)
+        d.callback_yes();
+    d.callback_yes = null;
+    d.callback_no = null;
+}
+
+function confirm_no() {
+    let d = document.getElementById("confirm-dialog");
+    d.close();
+    if (d.callback_no)
+        d.callback_no();
+    d.callback_yes = null;
+    d.callback_no = null;
 }
 
 function eom_show(msg) {
+    update_totals();
     document.getElementById("eom-text").innerHTML = msg;
     document.getElementById("eom-dialog").show();
 }
 
 function eom_close(ev) {
+    ev.preventDefault();
     document.getElementById("eom-dialog").close();
     document.getElementById("input-contract").focus();
     clear_scorepad();
-    update_totals();
+    next_hand();
 }
 
 window.onload = function() {
@@ -739,6 +801,12 @@ window.onload = function() {
         .addEventListener("click", input_undo);
     document.getElementById("input-clear")
         .addEventListener("click", input_clear);
+    document.getElementById("alert-close")
+        .addEventListener("click", alert_hide);
+    document.getElementById("confirm-yes")
+        .addEventListener("click", confirm_yes);
+    document.getElementById("confirm-no")
+        .addEventListener("click", confirm_no);
     document.getElementById("eom-close")
         .addEventListener("click", eom_close);
     let se = document.getElementById("system");
