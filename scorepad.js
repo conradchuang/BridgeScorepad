@@ -29,6 +29,12 @@ SeatName = {
     S: "South",
     W: "West",
 }
+SeatSide = {
+    north: "ns",
+    east: "ew",
+    south: "ns",
+    west: "ew",
+}
 SideName = {
     ew: "East-West",
     ns: "North-South",
@@ -72,15 +78,17 @@ function update_name(ev) {
     document.getElementById(seat + "-name").innerHTML = name;
 }
 
-function update_dealer() {
+function update_dealer(ev) {
     /* this = element triggering event */
-    let seat = this.value;
-    /* Hide previous dealer and show seat as current dealer */
-    let players = document.getElementsByClassName("dealing");
-    for (let i = 0; i < players.length; i++)
-        players[i].classList.remove("dealing");
-    let te = document.getElementById(seat + "-dealer");
-    te.classList.add("dealing");
+    show_dealer(this.getAttribute("seat"));
+}
+
+function show_dealer(seat) {
+    if (seat != null) {
+        for (let de of document.getElementsByClassName("dealing"))
+            de.classList.remove("dealing");
+        document.getElementById(seat + "-dealer").classList.add("dealing");
+    }
     /* Clear any displayed contracts and show part scores */
     let labels = { "north":"", "east":"", "south":"", "west":"" };
     if (ScoreSystem != "Duplicate") {
@@ -94,26 +102,15 @@ function update_dealer() {
             labels["east"] = ps.ew;
             labels["west"] = ps.ew;
         }
-        labels[seat] = "";
     }
-    for (let seat in labels)
-        document.getElementById(seat + "-contract").innerHTML = labels[seat];
+    for (let s in labels)
+        document.getElementById(s + "-contract").innerHTML = labels[s];
     /* Set vulnerability.
      * For Chicago and duplicate scoring, vulnerability
      * depends on number of hands dealt */
     if (ScoreSystem == "Duplicate" || ScoreSystem == "Chicago") {
-        switch (seat) {
-            case "north":
-            case "south":
-                us = "ns";
-                them = "ew";
-                break;
-            case "east":
-            case "west":
-                us = "ew";
-                them = "ns";
-                break;
-        }
+        let us = SeatSide[seat];
+        let them = OtherSide[us];
         switch (HandResults.length % 4) {
             case 0:
                 set_vulnerability(us, false);
@@ -142,10 +139,6 @@ function update_contract(ev) {
         return;
     }
     this.value = contract_details.whole;
-    /* Hide dealer icon and show contract on board */
-    let dealing = document.getElementsByClassName("dealing")
-    for (let de of dealing)    /* should be exactly zero or one item */
-        de.classList.remove("dealing");
     /* Display final contract on board */
     let seat = SeatAbbr[contract_details.declarer];
     for (let s in NextSeat) {
@@ -604,22 +597,15 @@ function update_result(ev) {
 
 function next_hand() {
     /* Show dealer for next hand */
-    let dealings = document.getElementsByName("dealing");
-    let cur_seat = null;
-    for (let de of dealings) {
-        if (de.checked) {
-            cur_seat = de.value;
-            de.checked = false;
-        }
+    let dealers = document.getElementsByClassName("dealing");
+    if (dealers.length != 1) {
+        alert("Something is horribly wrong (next_hand)");
+        return;
     }
+    let de = dealers[0];
+    let cur_seat = de.getAttribute("seat");
     let next_seat = NextSeat[cur_seat];
-    for (let de of dealings) {
-        if (de.value == next_seat) {
-            de.checked = true;
-            update_dealer.call(de);
-            break;
-        }
-    }
+    show_dealer(next_seat);
     /* Clear contract and result fields */
     let contract = document.getElementById("input-contract");
     contract.value = "";
@@ -661,19 +647,15 @@ function undo() {
         }
     }
     /* Show dealer for last hand */
-    let dealings = document.getElementsByName("dealing");
-    let cur_seat = null;
-    for (let de of dealings)
-        if (de.checked)
-            cur_seat = de.value;
-    let prev_seat = PrevSeat[cur_seat];
-    for (let de of dealings) {
-        if (de.value == prev_seat) {
-            de.checked = true;
-            update_dealer.call(de);
-            break;
-        }
+    let dealers = document.getElementsByClassName("dealing");
+    if (dealers.length != 1) {
+        alert("Something is horribly wrong (undo)");
+        return;
     }
+    let de = dealers[0];
+    let cur_seat = de.getAttribute("seat");
+    let prev_seat = PrevSeat[cur_seat];
+    show_dealer(prev_seat);
 }
 
 function input_clear() {
@@ -685,14 +667,7 @@ function clear_all() {
     TotalScore.ns = 0;
     TotalScore.ew = 0;
     show_accumulated_totals();
-    /* Show dealer after history is wiped (affects vulnerability) */
-    let dealings = document.getElementsByName("dealing");
-    for (let de of dealings) {
-        if (de.checked) {
-            update_dealer.call(de);
-            break;
-        }
-    }
+    show_dealer(null);
 }
 
 function change_system() {
@@ -735,7 +710,6 @@ function focus_on_result() {
 }
 
 function alert_show(msg, cb) {
-    console.log("alert_show");
     document.getElementById("alert-text").innerHTML = msg;
     let d = document.getElementById("alert-dialog");
     d.callback = cb;
@@ -798,12 +772,8 @@ window.onload = function() {
         ne.addEventListener("change", update_name);
         update_name.call(ne);
     }
-    let dealings = document.getElementsByName("dealing");
-    for (let de of dealings) {
+    for (let de of document.getElementsByClassName("dealer"))
         de.addEventListener("click", update_dealer);
-        if (de.checked)
-            update_dealer.call(de);
-    }
     document.getElementById("input-contract")
         .addEventListener("keydown", update_contract);
     document.getElementById("input-result")
@@ -822,5 +792,6 @@ window.onload = function() {
         .addEventListener("click", eom_close);
     let se = document.getElementById("system");
     se.addEventListener("change", change_system);
+    show_dealer(null);
     set_system(se.value);
 }
