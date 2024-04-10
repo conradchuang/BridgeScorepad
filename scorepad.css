@@ -144,13 +144,16 @@ input, select {
     height: 45%;
 }
 .below-line-row {
-    height: 45%;
+    height: 35%;
 }
 .below-line-row-duplicate {
-    height: 90%;
+    height: 80%;
+}
+.match-row {
+    height: 7%;
 }
 .total-row {
-    height: 5%;
+    height: 8%;
 }
 .above-line, .below-line {
     width: 50%;
@@ -175,8 +178,17 @@ input, select {
 .score-value {
     text-align: right;
 }
+.score-match {
+    border-left: 2px solid black;
+    border-right: 2px solid black;
+    border-bottom: 0;
+    border-top: 2px double black;
+}
 .score-total {
-    border: 2px solid black;
+    border-left: 2px solid black;
+    border-right: 2px solid black;
+    border-bottom: 2px solid black;
+    border-top: 6px double black;
 }
 dialog::backdrop {
     background-color: rgba(0,0,0,0.4);

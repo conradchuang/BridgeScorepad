@@ -169,6 +169,7 @@ function clear_scorepad() {
     clear_section("ew-above");
     clear_section("ew-below");
     HandResults = [];
+    show_match_totals();
     set_vulnerability("ns", false);
     set_vulnerability("ew", false);
     BelowRows = [];
@@ -521,6 +522,7 @@ function contract_made(hand_result, side, contract, score_above, score_total,
         }
     }
     HandResults.push(hand_result);
+    show_match_totals();
     if (end_of_match)
         end_match();
     else
@@ -545,10 +547,19 @@ function contract_down(hand_result, other_side, undertricks, label,
                                                         breakdown_msg);
     }
     HandResults.push(hand_result);
+    show_match_totals();
     if (end_of_match)
         end_match();
     else
         next_hand();
+}
+
+function show_match_totals() {
+    let match_total = { ns:0, ew:0 };
+    for (let result of HandResults)
+        match_total[result.winning_side] += result.score_total;
+    document.getElementById("score-ns-match").innerHTML = match_total.ns;
+    document.getElementById("score-ew-match").innerHTML = match_total.ew;
 }
 
 function end_match(end_of_match) {
@@ -673,7 +684,7 @@ function clear_all() {
     clear_scorepad();
     TotalScore.ns = 0;
     TotalScore.ew = 0;
-    update_totals();
+    show_accumulated_totals();
     /* Show dealer after history is wiped (affects vulnerability) */
     let dealings = document.getElementsByName("dealing");
     for (let de of dealings) {
@@ -710,7 +721,7 @@ function set_system(system) {
     ScoreSystem = system;
 }
 
-function update_totals() {
+function show_accumulated_totals() {
     document.getElementById("score-ns-total").innerHTML = TotalScore.ns;
     document.getElementById("score-ew-total").innerHTML = TotalScore.ew;
 }
@@ -768,7 +779,7 @@ function confirm_no() {
 }
 
 function eom_show(msg) {
-    update_totals();
+    show_accumulated_totals();
     document.getElementById("eom-text").innerHTML = msg;
     document.getElementById("eom-dialog").show();
 }
