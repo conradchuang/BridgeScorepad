@@ -11,6 +11,7 @@ body {
     padding: 5px;
     height: 100vh;
     width: 100vw;
+    font-family: sans-serif;
 }
 * {
     box-sizing: border-box;
@@ -25,7 +26,6 @@ input, select {
 .app-div {
     height: 100%;
     width: 100%;
-    font-family: sans-serif;
     display: flex;
     flex-flow: column nowrap;
     align-items: stretch;
