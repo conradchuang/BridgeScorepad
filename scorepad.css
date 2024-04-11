@@ -166,6 +166,7 @@ input, select {
 }
 .total-row {
     height: 8%;
+    background-color: lightgray;
 }
 .above-line, .below-line {
     width: 50%;
