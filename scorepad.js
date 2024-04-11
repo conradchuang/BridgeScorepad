@@ -3,10 +3,10 @@
 ScoreSystem = "Duplicate";   /* One of Duplicate, Chicago, Rubber */
 SuitName = {
     N: "N",
-    S: "&spades;",
-    H: "&hearts;",
-    D: "&diams;",
-    C: "&clubs;",
+    S: "<tspan class=\"suit-black\">&spades;</tspan>",
+    H: "<tspan class=\"suit-red\">&hearts;</tspan>",
+    D: "<tspan class=\"suit-red\">&diams;</tspan>",
+    C: "<tspan class=\"suit-black\">&clubs;</tspan>",
 }
 NextSeat = {
     north: "east",
@@ -76,6 +76,12 @@ function update_name(ev) {
     let name = this.value || "";
     let seat = get_player_seat(this.id);
     document.getElementById(seat + "-name").innerHTML = name;
+}
+
+function edit_name(ev) {
+    /* this = element triggering event */
+    let seat = this.getAttribute("seat");
+    edit_name_show(seat);
 }
 
 function update_dealer(ev) {
@@ -610,10 +616,7 @@ function next_hand() {
     let contract = document.getElementById("input-contract");
     contract.value = "";
     contract.disabled = false;
-    /* Only change the focus if there is no dialog (such
-     * as end-of-match) is open */
-    if (!document.getElementById("eom-dialog").open)
-        contract.focus();
+    contract.focus();
     let result = document.getElementById("input-result")
     result.value = "";
     result.disabled = true;
@@ -672,7 +675,7 @@ function clear_all() {
 
 function change_system() {
     confirm_show("Switch to " + this.value + " scoring?<br/>" +
-                 "Current scores will be erased.)",
+                 "All current and total scores will be erased.",
                  set_system.bind(this, this.value), null);
 }
 
@@ -766,12 +769,37 @@ function eom_close(ev) {
     next_hand();
 }
 
+function edit_name_show(seat) {
+    document.getElementById("edit-name-input").value =
+        document.getElementById(seat + "-name").innerHTML;
+    let d = document.getElementById("edit-name-dialog");
+    d.seat = seat;
+    d.showModal();
+}
+
+function edit_name_finished(ev) {
+    if (ev.keyCode != 13)
+        return;
+    ev.preventDefault();
+    edit_name_close(ev);
+}
+
+function edit_name_close(ev) {
+    let d = document.getElementById("edit-name-dialog");
+    d.close();
+    let name = document.getElementById("edit-name-input").value || "";
+    document.getElementById(d.seat + "-name").innerHTML = name;
+    d.seat = null;
+}
+
 window.onload = function() {
     let names = document.getElementsByClassName("input-name");
     for (let ne of names) {
         ne.addEventListener("change", update_name);
         update_name.call(ne);
     }
+    for (let ne of document.getElementsByClassName("seat-name"))
+        ne.addEventListener("click", edit_name);
     for (let de of document.getElementsByClassName("dealer"))
         de.addEventListener("click", update_dealer);
     document.getElementById("input-contract")
@@ -790,6 +818,10 @@ window.onload = function() {
         .addEventListener("click", confirm_no);
     document.getElementById("eom-close")
         .addEventListener("click", eom_close);
+    document.getElementById("edit-name-input")
+        .addEventListener("keydown", edit_name_finished);
+    document.getElementById("edit-name-close")
+        .addEventListener("click", edit_name_close);
     let se = document.getElementById("system");
     se.addEventListener("change", change_system);
     show_dealer(null);

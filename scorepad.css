@@ -89,12 +89,21 @@ input, select {
 }
 .dealer {
     fill: lightgray;
-    stroke: gray;
-    stroke-width: 3;
+    stroke: lightgray;
+    stroke-width: 10;
 }
 .dealing {
+    fill: darkgreen;
+    stroke: darkgreen;
+    stroke-width: 15;
+}
+.suit-black {
     fill: black;
-    stroke: black;
+    color: black;
+}
+.suit-red {
+    fill: crimson;
+    color: crimson;
 }
 .contract {
     font-size: 1.3vw;
@@ -221,4 +230,8 @@ dialog::backdrop {
 }
 .dialog-button {
     font-size: 16pt;
+}
+.edit-name-input {
+    width: 8rem;
+    font-size:16pt;
 }

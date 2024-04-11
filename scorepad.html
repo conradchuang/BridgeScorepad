@@ -165,13 +165,13 @@ C306.52,285.352,302.491,281.322,297.52,281.322z"/>
 
                 <!-- player names (may be filled in using form) -->
                 <text id="north-name" class="player-name" text-anchor="middle"
-                      x="50" y="10" transform="rotate(180 50,10)">North</text>
+                      x="50" y="12" transform="rotate(180 50,12)">North</text>
                 <text id="east-name" class="player-name" text-anchor="middle"
-                      x="90" y="50" transform="rotate(-90 90,50)">East</text>
+                      x="88" y="50" transform="rotate(-90 88,50)">East</text>
                 <text id="south-name" class="player-name" text-anchor="middle"
-                      x="50" y="90" transform="rotate(0 50,90)">South</text>
+                      x="50" y="88" transform="rotate(0 50,88)">South</text>
                 <text id="west-name" class="player-name" text-anchor="middle"
-                      x="10" y="50" transform="rotate(90 10,50)">West</text>
+                      x="12" y="50" transform="rotate(90 12,50)">West</text>
 
                 <!-- part score during bidding or final contract -->
                 <text id="north-contract" class="contract" text-anchor="middle"
@@ -323,15 +323,13 @@ C306.52,285.352,302.491,281.322,297.52,281.322z"/>
 </dialog>
 <dialog id="confirm-dialog" class="dialog">
     <div id="confirm-content" class="dialog-content">
-        <form method="dialog">
-            <p id="confirm-text"></p>
-            <div class="dialog-buttons">
-                <input type="submit" class="dialog-button"
-                       id="confirm-no" value="No"/>
-                <input type="submit" class="dialog-button"
-                       id="confirm-yes" value="Yes" autofocus/>
-            </div>
-        </form>
+        <p id="confirm-text"></p>
+        <div class="dialog-buttons">
+            <input type="button" class="dialog-button"
+                   id="confirm-no" value="No"/>
+            <input type="button" class="dialog-button"
+                   id="confirm-yes" value="Yes" autofocus/>
+        </div>
     </div>
 </dialog>
 <dialog id="eom-dialog" class="dialog">
@@ -341,6 +339,17 @@ C306.52,285.352,302.491,281.322,297.52,281.322z"/>
         <div class="dialog-buttons">
             <input type="button" class="dialog-button"
                    id="eom-close" value="Okay" autofocus/>
+        </div>
+    </div>
+</dialog>
+<dialog id="edit-name-dialog" class="dialog">
+    <div id="edit-name-content" class="dialog-content">
+        <span class="edit-name-label">North</span>
+        <input type="text" id="edit-name-input"
+               class="edit-name-input" placeholder="Conrad" autofocus/>
+        <div class="dialog-buttons">
+            <input type="button" class="dialog-button"
+                   id="edit-name-close" value="Okay"/>
         </div>
     </div>
 </dialog>
