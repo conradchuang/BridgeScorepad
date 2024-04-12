@@ -32,6 +32,7 @@ input, select {
     align-content: stretch;
     gap: 1rem;
 }
+
 .system-panel {
     text-align: center;
     flex-grow: 0;
@@ -39,6 +40,19 @@ input, select {
 .system-label {
     font-size:20pt;
 }
+.system {
+    font-size:20pt;
+}
+
+.suit-black {
+    fill: black;
+    color: black;
+}
+.suit-red {
+    fill: crimson;
+    color: crimson;
+}
+
 .ui-panel {
     text-align: center;
     flex-grow: 0;
@@ -57,24 +71,6 @@ input, select {
     width: 100%;
     height: auto;
 }
-.input-panel {
-    display: inline-block;
-    margin-left: 0.5rem;
-    font-size:20pt;
-    flex-grow: 0;
-}
-.ui-table {
-}
-.ui-section {
-    padding-top: 1vh;
-    text-align: center;
-}
-.ns {
-    fill: white;
-}
-.ew {
-    fill: white;
-}
 .grid {
     stroke: black;
     stroke-width: 0.5;
@@ -87,8 +83,11 @@ input, select {
 .vulnerable {
     fill: lemonchiffon;
 }
-.player-name {
-    font-size: 6pt;
+.ns {
+    fill: white;
+}
+.ew {
+    fill: white;
 }
 .seat-name {
     font-size: 6pt;
@@ -103,38 +102,31 @@ input, select {
     stroke: darkgreen;
     stroke-width: 15;
 }
-.suit-black {
-    fill: black;
-    color: black;
-}
-.suit-red {
-    fill: crimson;
-    color: crimson;
-}
 .contract {
     font-size: 1.3vw;
 }
-#system {
-    font-size:20pt;
-}
-.input-seat-label {
-    text-align: right;
-    font-size:16pt;
-    font-weight: bold;
-    width: 4rem;
+
+.input-panel {
     display: inline-block;
+    margin-left: 0.5rem;
+    font-size:20pt;
+    flex-grow: 0;
 }
-.input-dealing {
-    margin-left: 0px;
+.ui-table {
 }
-.input-name, .input-deal {
-    width: 5rem;
-    font-size:16pt;
+.ui-section {
+    padding-top: 1vh;
+    text-align: center;
+}
+.input-deal {
+    width: 8rem;
+    font-size:20pt;
 }
 .input-action {
     width: 6rem;
-    font-size:16pt;
+    font-size:20pt;
 }
+
 .score-panel {
     flex-grow: 1;
 }
@@ -167,13 +159,6 @@ input, select {
 .below-line-row-duplicate {
     height: 80%;
 }
-.match-row {
-    height: 7%;
-}
-.total-row {
-    height: 8%;
-    background-color: lightgray;
-}
 .above-line, .below-line {
     width: 50%;
     border: 1px solid black;
@@ -197,11 +182,18 @@ input, select {
 .score-value {
     text-align: right;
 }
+.match-row {
+    height: 7%;
+}
 .score-match {
     border-left: 2px solid black;
     border-right: 2px solid black;
     border-bottom: 0;
     border-top: 2px double black;
+}
+.total-row {
+    height: 8%;
+    background-color: lightgray;
 }
 .score-total {
     border-left: 2px solid black;
@@ -209,6 +201,7 @@ input, select {
     border-bottom: 2px solid black;
     border-top: 6px double black;
 }
+
 dialog::backdrop {
     background-color: rgba(0,0,0,0.4);
 }
