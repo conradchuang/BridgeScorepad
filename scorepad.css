@@ -119,11 +119,11 @@ input, select {
     text-align: center;
 }
 .input-deal {
-    width: 8rem;
-    font-size:20pt;
+    width: 10rem;
+    font-size:32pt;
+    /* Font needs to be big enough to avoid autozoom on iPhone */
 }
 .input-action {
-    width: 6rem;
     font-size:20pt;
 }
 
