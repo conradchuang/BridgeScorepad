@@ -128,7 +128,7 @@ input, select {
 }
 .input-deal {
     width: 10rem;
-    font-size:28pt;
+    font-size:30pt;
     /* Font needs to be big enough to avoid autozoom on iPhone */
 }
 .input-action {
