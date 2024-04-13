@@ -117,12 +117,15 @@ function input_clear(ev) {
  */
 
 function set_vulnerability(side, onoff) {
-    let players = document.getElementsByClassName(side);
+    let players = document.getElementsByClassName(side + "-bg");
     for (let player of players) {
-        if (onoff)
+        if (onoff) {
+            player.classList.remove("nonvul");
             player.classList.add("vulnerable");
-        else
+        } else {
             player.classList.remove("vulnerable");
+            player.classList.add("nonvul");
+        }
     }
     Vulnerability[side] = onoff;
 }
@@ -302,7 +305,7 @@ function update_scorepad(contract_info, result) {
         label += " (vul)";
         desc += ", vulnerable,";
     } else {
-        label += " (not vul)";
+        label += " (nonvul)";
         desc += ", not vulnerable,";
     }
     /* Add result to history */
