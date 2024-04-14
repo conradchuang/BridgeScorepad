@@ -21,6 +21,7 @@ div {
 input, select {
     font-family: inherit;
 }
+
 .app-div {
     height: 100%;
     width: 100%;
@@ -29,6 +30,21 @@ input, select {
     align-items: stretch;
     align-content: stretch;
     gap: 1rem;
+}
+
+.align-center {
+    text-align: center;
+}
+.align-right {
+    text-align: right;
+}
+.suit-black {
+    fill: black;
+    color: black;
+}
+.suit-red {
+    fill: crimson;
+    color: crimson;
 }
 
 .system-panel {
@@ -40,15 +56,6 @@ input, select {
 }
 .system {
     font-size: 20pt;
-}
-
-.suit-black {
-    fill: black;
-    color: black;
-}
-.suit-red {
-    fill: crimson;
-    color: crimson;
 }
 
 .ui-panel {
@@ -135,6 +142,17 @@ input, select {
     font-size:20pt;
 }
 
+.match-panel {
+    text-align: center;
+    flex-grow: 0;
+}
+.match-label {
+    font-size: 20pt;
+}
+.match {
+    font-size: 20pt;
+}
+
 .score-panel {
     flex-grow: 1;
 }
@@ -157,7 +175,7 @@ input, select {
 .score-header {
 }
 .score-header th, .match-row td, .total-row td {
-    height: 28px;
+    height: 28pt;
 }
 .above-line-row {
     height: 40%;

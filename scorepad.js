@@ -45,8 +45,11 @@ OtherSide = {
 }
 NameConnector = " &ndash; ";
 
+Matches = [];
+CurrentMatch = -1;
+CurrentMatchResults = null;     /* Used when displaying prev matches */
+MatchResults = [];
 TotalScore = { ns:0, ew:0 };
-HandResults = [];
 Vulnerability = { ns: false, ew: false }
 BelowRows = [];
 NextRow = { ns: 0, ew: 0 };
@@ -56,61 +59,6 @@ REContract = /([1234567][NSHDC]X{0,2})([NESW])/;
 REContractDetails = /([1234567])([NSHDC])(X{0,2})([NESW])/;
 /* Result is of form "[+-]#" */
 REResult = /([-+]?)(\d+)/;
-
-/*
- * Event handlers
- */
-
-function change_system(ev) {
-    confirm_show("Switch to " + this.value + " scoring?<br/>" +
-                 "All current and total scores will be erased.",
-                 set_system.bind(this, this.value), null);
-}
-
-function edit_name(ev) {
-    /* this = element triggering event */
-    let seat = this.getAttribute("seat");
-    edit_name_show(seat);
-}
-
-function update_dealer(ev) {
-    /* this = element triggering event */
-    show_dealer(this.getAttribute("seat"));
-}
-
-function update_contract(ev) {
-    if (ev.keyCode != 13)
-        return;
-    ev.preventDefault();
-    let contract_info = parse_contract(this.value);
-    if (contract_info == null) {
-        alert_show("That is not a valid contract.", focus_on_contract);
-        return;
-    }
-    this.value = contract_info.whole;
-    /* Display final contract on board */
-    let seat = SeatAbbr[contract_info.declarer];
-    for (let s in NextSeat) {
-        let ce = document.getElementById(s + "-contract");
-        ce.innerHTML = s == seat ? html_contract(contract_info, false) : "";
-    }
-    /* Disable contract input and move focus to result input field */
-    let result = document.getElementById("input-result");
-    result.value = "";
-    result.disabled = false;
-    result.focus();
-}
-
-function input_undo(ev) {
-    if (HandResults.length == 0)
-        alert_show("There are no results to undo", null);
-    else
-        confirm_show("Remove last contract score?", undo, null);
-}
-
-function input_clear(ev) {
-    confirm_show("Clear all scores, including totals?", clear_all, null);
-}
 
 /*
  * Vulnerability functions
@@ -133,6 +81,11 @@ function set_vulnerability(side, onoff) {
 /*
  * Dealer functions
  */
+
+function update_dealer(ev) {
+    /* this = element triggering event */
+    show_dealer(this.getAttribute("seat"));
+}
 
 function show_dealer(seat) {
     if (seat != null) {
@@ -162,7 +115,7 @@ function show_dealer(seat) {
     if (ScoreSystem == "Duplicate" || ScoreSystem == "Chicago") {
         let us = SeatSide[seat];
         let them = OtherSide[us];
-        switch (HandResults.length % 4) {
+        switch (MatchResults.length % 4) {
             case 0:
                 set_vulnerability(us, false);
                 set_vulnerability(them, false);
@@ -193,7 +146,7 @@ function clear_scorepad() {
     clear_section("ns-below");
     clear_section("ew-above");
     clear_section("ew-below");
-    HandResults = [];
+    MatchResults = [];
     show_match_totals();
     set_vulnerability("ns", false);
     set_vulnerability("ew", false);
@@ -280,7 +233,7 @@ function undo_above_score(state) {
     state.row.remove();
 }
 
-function update_scorepad(contract_info, result) {
+function update_scorepad(contract_info, result, redisplay) {
     let level = parseInt(contract_info.level);
     let suit = contract_info.suit;
     /* 0:undoubled 1:doubled 2:redoubled */
@@ -293,7 +246,7 @@ function update_scorepad(contract_info, result) {
     else if (tricks < level || tricks > 7)
         throw new RangeError("too few tricks for contract");
     let vulnerable = Vulnerability[side]
-    let deal_index = HandResults.length;
+    let deal_index = MatchResults.length;
     let label = contract_label(deal_index, contract_info, result)
     let desc = level + " " + SuitName[suit];
     if (doubled == 1)
@@ -403,10 +356,16 @@ function update_scorepad(contract_info, result) {
         let msg = desc + " making " + tricks + "<br/>" +
                   SideName[side] + " scores " + score_total + "<br/>" +
                   breakdown_msg;
-        confirm_show(msg, contract_made.bind(null, hand_result, side, contract,
-                                             score_above, score_total, label,
-                                             breakdown_msg, draw_line,
-                                             end_of_match), null);
+        if (redisplay)
+            contract_made(hand_result, side, contract, score_above,
+                          score_total, label, breakdown_msg, draw_line,
+                          end_of_match, true);
+        else
+            confirm_show(msg,
+                         contract_made.bind(null, hand_result, side, contract,
+                                            score_above, score_total, label,
+                                            breakdown_msg, draw_line,
+                                            end_of_match, false), null);
     } else {
         /* Compute undertricks score */
         if (vulnerable) {
@@ -464,14 +423,20 @@ function update_scorepad(contract_info, result) {
         let msg = desc + " down " + (-tricks) + "<br/>" +
                   SideName[other_side] + " scores " + undertricks;
         let breakdown_msg = "undertricks: " + undertricks;
-        confirm_show(msg, contract_down.bind(null, hand_result, other_side,
-                                             undertricks, label, breakdown_msg,
-                                             end_of_match), null);
+        if (redisplay)
+            contract_down(hand_result, other_side, undertricks, label,
+                          breakdown_msg, end_of_match, true);
+        else
+            confirm_show(msg,
+                         contract_down.bind(null, hand_result, other_side,
+                                            undertricks, label, breakdown_msg,
+                                            end_of_match, false), null);
     }
 }
 
 function contract_made(hand_result, side, contract, score_above, score_total,
-                       label, breakdown_msg, draw_line, end_of_match) {
+                       label, breakdown_msg, draw_line,
+                       end_of_match, redisplay) {
     /* Display on score pad */
     hand_result.winning_side = side;
     hand_result.score_total = score_total;
@@ -493,16 +458,18 @@ function contract_made(hand_result, side, contract, score_above, score_total,
                                                             breakdown_msg);
         }
     }
-    HandResults.push(hand_result);
+    MatchResults.push(hand_result);
     show_match_totals();
-    if (end_of_match)
-        end_match();
-    else
-        next_hand();
+    if (!redisplay) {
+        if (end_of_match)
+            end_match();
+        else
+            next_hand();
+    }
 }
 
 function contract_down(hand_result, other_side, undertricks, label,
-                       breakdown_msg, end_of_match) {
+                       breakdown_msg, end_of_match, redisplay) {
     /* Display on score pad */
     hand_result.winning_side = other_side;
     hand_result.score_total = undertricks;
@@ -518,17 +485,19 @@ function contract_down(hand_result, other_side, undertricks, label,
                                                         undertricks,
                                                         breakdown_msg);
     }
-    HandResults.push(hand_result);
+    MatchResults.push(hand_result);
     show_match_totals();
-    if (end_of_match)
-        end_match();
-    else
-        next_hand();
+    if (!redisplay) {
+        if (end_of_match)
+            end_match();
+        else
+            next_hand();
+    }
 }
 
 function show_match_totals() {
     let match_total = { ns:0, ew:0 };
-    for (let result of HandResults)
+    for (let result of MatchResults)
         match_total[result.winning_side] += result.score_total;
     document.getElementById("score-ns-match").innerHTML = match_total.ns;
     document.getElementById("score-ew-match").innerHTML = match_total.ew;
@@ -543,10 +512,10 @@ function show_accumulated_totals() {
  * End of match functions
  */
 
-function end_match(end_of_match) {
+function end_match() {
     let final = {ns:0, ew:0};
     let msg;
-    for (let hand_result of HandResults)
+    for (let hand_result of MatchResults)
         final[hand_result.winning_side] += hand_result.score_total;
     if (final.ns > final.ew) {
         msg = SideName["ns"] + " wins:" + final.ns + "-" + final.ew;
@@ -570,13 +539,78 @@ function eom_close(ev) {
     ev.preventDefault();
     document.getElementById("eom-dialog").close();
     document.getElementById("input-contract").focus();
+    Matches.push(MatchResults);
     clear_scorepad();
     next_hand();
+    update_matches();
+}
+
+function update_matches() {
+    let mge = document.getElementById("match-group");
+    mge.innerHTML = "";
+    for (let i = 0; i < Matches.length; i++) {
+        let opt = document.createElement("option");
+        opt.value = i;
+        opt.text = (i + 1);
+        mge.appendChild(opt);
+    }
+    let opt = document.createElement("option");
+    opt.value = -1;
+    opt.selected = true;
+    opt.text = "Current";
+    mge.appendChild(opt);
+}
+
+function update_selected_match(ev) {
+    let selected_match = parseInt(this.value);
+    if (selected_match == CurrentMatch)
+        return;
+    if (CurrentMatch == -1)
+        CurrentMatchResults = MatchResults;
+    CurrentMatch = selected_match;
+    if (selected_match == -1) {
+        /* Current match */
+        redisplay_match(CurrentMatchResults);
+        disable_contract(false);
+    } else {
+        /* Previous match */
+        disable_contract(true);
+        redisplay_match(Matches[selected_match]);
+    }
+}
+
+function redisplay_match(results) {
+    clear_scorepad();
+    for (let result of results)
+        update_scorepad(result.contract_info, result.result, true);
 }
 
 /*
  * Contract functions
  */
+
+function update_contract(ev) {
+    if (ev.keyCode != 13)
+        return;
+    ev.preventDefault();
+    let contract_info = parse_contract(this.value);
+    if (contract_info == null) {
+        alert_show("That is not a valid contract.", focus_on_contract);
+        return;
+    }
+    this.value = contract_info.whole;
+    /* Display final contract on board */
+    let seat = SeatAbbr[contract_info.declarer];
+    for (let s in NextSeat) {
+        let ce = document.getElementById(s + "-contract");
+        ce.innerHTML = s == seat ? html_contract(contract_info, false) : "";
+    }
+    /* Disable contract input and move focus to result input field */
+    let result = document.getElementById("input-result");
+    result.value = "";
+    result.disabled = false;
+    result.focus();
+}
 
 function parse_contract(s) {
     let ns = s.replace(/\s/g, '').toUpperCase();
@@ -606,6 +640,10 @@ function contract_label(deal_index, contract_info, result_info) {
 
 function focus_on_contract() {
     document.getElementById("input-contract").focus();
+}
+
+function disable_contract(onoff) {
+    document.getElementById("input-contract").disabled = onoff;
 }
 
 /*
@@ -640,7 +678,7 @@ function update_result(ev) {
     /* Update score pad */
     let ce = document.getElementById("input-contract");
     try {
-        update_scorepad(parse_contract(ce.value), result_info);
+        update_scorepad(parse_contract(ce.value), result_info, false);
     } catch (e) {
         if (e instanceof RangeError) {
             alert_show(e.message, focus_on_result);
@@ -680,9 +718,16 @@ function focus_on_result() {
  * Undo functions
  */
 
+function input_undo(ev) {
+    if (MatchResults.length == 0)
+        alert_show("There are no results to undo", null);
+    else
+        confirm_show("Remove last contract score?", undo, null);
+}
+
 function undo() {
     /* Remove last result */
-    let last_result = HandResults.pop();
+    let last_result = MatchResults.pop();
     if (last_result.state_score_above != null)
         undo_above_score(last_result.state_score_above);
     if (last_result.state_score_below != null)
@@ -692,7 +737,7 @@ function undo() {
         set_vulnerability("ns", false);
         set_vulnerability("ew", false);
         let below_scores = {ns:0, ew:0};
-        for (let result of HandResults) {
+        for (let result of MatchResults) {
             below_scores[result.winning_side] += result.score_below;
             if (below_scores[result.winning_side] >= 100) {
                 below_scores = {ns:0, ew:0};
@@ -717,6 +762,10 @@ function undo() {
  * Clear scores functions
  */
 
+function input_clear(ev) {
+    confirm_show("Clear all scores, including totals?", clear_all, null);
+}
+
 function clear_all() {
     clear_scorepad();
     TotalScore.ns = 0;
@@ -728,6 +777,12 @@ function clear_all() {
 /*
  * Edit name functions
  */
+
+function edit_name(ev) {
+    /* this = element triggering event */
+    let seat = this.getAttribute("seat");
+    edit_name_show(seat);
+}
 
 function edit_name_show(seat) {
     let name = document.getElementById(seat + "-name").innerHTML;
@@ -761,7 +816,7 @@ function edit_name_close(ev) {
  */
 function part_scores() {
     let part_scores = {ns:0, ew:0};
-    for (let result of HandResults) {
+    for (let result of MatchResults) {
         part_scores[result.winning_side] += result.score_below;
         if (part_scores[result.winning_side] >= 100)
             part_scores = {ns:0, ew:0};
@@ -776,6 +831,13 @@ function part_score(side) {
 /*
  * Change score system functions
  */
+
+function change_system(ev) {
+    confirm_show("Switch to " + this.value + " scoring?<br/>" +
+                 "All current and total scores will be erased.",
+                 set_system.bind(this, this.value), null);
+}
+
 function set_system(system) {
     let above = document.getElementById("above-the-line");
     let below = document.getElementById("below-the-line");
@@ -880,8 +942,11 @@ window.onload = function() {
         .addEventListener("click", edit_name_close);
     document.getElementById("system")
         .addEventListener("change", change_system);
+    document.getElementById("match")
+        .addEventListener("change", update_selected_match);
 
     /* Finish setup */
+    update_matches();
     set_system(document.getElementById("system").value);
     show_dealer(null);
 }

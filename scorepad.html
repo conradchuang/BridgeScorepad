@@ -10,7 +10,7 @@
 <body>
 <div class="app-div">
     <div class="system-panel">
-        <select class="system-label" name="system" id="system">
+        <select class="system" name="system" id="system">
             <optgroup label="Scoring System" class="system-label">
                 <option value="Duplicate" selected>Duplicate</option>
                 <option value="Chicago">Chicago</option>
@@ -205,12 +205,12 @@ C306.52,285.352,302.491,281.322,297.52,281.322z"/>
                 </thead>
                 <tbody>
                     <tr>
-                        <td align="right">Contract</td>
+                        <td class="align-right">Contract</td>
                         <td colspan="2"><input type="text" id="input-contract"
                                    class="input-deal" placeholder="4SxW"/></td>
                     </tr>
                     <tr>
-                        <td align="right">Result</td>
+                        <td class="align-right">Result</td>
                         <td colspan="2"><input type="text" id="input-result"
                                    class="input-deal"
                                    placeholder="+4" disabled/></td>
@@ -219,7 +219,7 @@ C306.52,285.352,302.491,281.322,297.52,281.322z"/>
                         <td>&nbsp;</td>
                     </tr>
                     <tr>
-                        <td align="center" colspan="3">
+                        <td class="align-center" colspan="3">
                             <input type="button" id="input-clear"
                                    class="input-action" value="Clear"/>
                             <input type="button" id="input-undo"
@@ -230,12 +230,21 @@ C306.52,285.352,302.491,281.322,297.52,281.322z"/>
             </table>
         </div>  <!-- input-panel -->
     </div>  <!-- ui-panel -->
+    <div class="match-panel">
+        <label for="match" class="match-label">Match&nbsp;</label>
+        <select id="match" class="match" name="match">
+            <optgroup id="match-group" class="match-label" label="Show Match">
+                <option value="Current" selected>Current</option>
+                <option value="27">27</option>
+            </optgroup>
+        </select>
+    </div>
     <div class="score-panel">
         <table id="scorepad" class="scorepad">
             <thead>
                 <tr class="score-header">
-                    <th align="center">North-South</th>
-                    <th align="center">East-West</th>
+                    <th class="align-center">North-South</th>
+                    <th class="align-center">East-West</th>
                 </tr>
             </thead>
             <tbody>
