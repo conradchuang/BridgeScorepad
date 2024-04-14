@@ -128,7 +128,7 @@ input, select {
 }
 .input-deal {
     width: 10rem;
-    font-size:30pt;
+    font-size:28pt;
     /* Font needs to be big enough to avoid autozoom on iPhone */
 }
 .input-action {
@@ -140,19 +140,24 @@ input, select {
 }
 .scorepad {
     width: 100%;
-    height: 95%;    /* Not sure why this cannot be 100% */
+    height: 100%;   /* border spacing and th/td padding must be 0 */
     border: 1px solid black;
+    border-spacing: 0;
     border-collapse: collapse;
     font-size:24pt;
 }
 .scorepad th {
+    padding: 0;
     width: 50%;
     border: 1px solid black;
 }
+.scorepad td {
+    padding: 0;
+}
 .score-header {
-    /* height: No need to set height since this, match-row and total-row
-     * will split what vertical space remains after above-line-row
-     * and below-line-row take what they need */
+}
+.score-header th, .match-row td, .total-row td {
+    height: 28px;
 }
 .above-line-row {
     height: 40%;
@@ -186,9 +191,6 @@ input, select {
 .score-value {
     text-align: right;
 }
-.match-row {
-    /* height: See score-header above */
-}
 .score-match {
     border-left: 2px solid black;
     border-right: 2px solid black;
@@ -196,7 +198,6 @@ input, select {
     border-top: 2px double black;
 }
 .total-row {
-    /* height: See score-header above */
     background-color: lightgray;
 }
 .score-total {
