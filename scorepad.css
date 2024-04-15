@@ -244,7 +244,7 @@ dialog::backdrop {
     margin: 15% auto;
     padding: 20px;
     border: 3px solid red;
-    width: 60%;
+    width: 80%;
     font-size: 20pt;
 }
 .dialog-buttons {
@@ -257,4 +257,26 @@ dialog::backdrop {
 .edit-name-input {
     width: 8rem;
     font-size:20pt;
+}
+.stats-data {
+    margin: 1rem;
+}
+.stats-table {
+    font-size:24pt;
+    border-spacing: 0.2rem;
+}
+.stats-header {
+    text-align: center;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+.stats-label {
+    text-align: right;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+.stats-value {
+    text-align: center;
+    padding-left: 1rem;
+    padding-right: 1rem;
 }

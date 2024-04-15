@@ -34,6 +34,10 @@ SeatSide = {
     east: "ew",
     south: "ns",
     west: "ew",
+    N: "ns",
+    E: "ew",
+    S: "ns",
+    W: "ew",
 }
 SideName = {
     ew: "East-West",
@@ -497,8 +501,8 @@ function contract_down(hand_result, other_side, undertricks, label,
 
 function show_match_totals() {
     let match_total = { ns:0, ew:0 };
-    for (let result of MatchResults)
-        match_total[result.winning_side] += result.score_total;
+    for (let hand of MatchResults)
+        match_total[hand.winning_side] += hand.score_total;
     document.getElementById("score-ns-match").innerHTML = match_total.ns;
     document.getElementById("score-ew-match").innerHTML = match_total.ew;
 }
@@ -515,8 +519,8 @@ function show_accumulated_totals() {
 function end_match() {
     let final = {ns:0, ew:0};
     let msg;
-    for (let hand_result of MatchResults)
-        final[hand_result.winning_side] += hand_result.score_total;
+    for (let hand of MatchResults)
+        final[hand.winning_side] += hand.score_total;
     if (final.ns > final.ew) {
         msg = SideName["ns"] + " wins:" + final.ns + "-" + final.ew;
     } else if (final.ns < final.ew) {
@@ -581,8 +585,8 @@ function update_selected_match(ev) {
 
 function redisplay_match(results) {
     clear_scorepad();
-    for (let result of results)
-        update_scorepad(result.contract_info, result.result, true);
+    for (let hand of results)
+        update_scorepad(hand.contract_info, hand.result, true);
 }
 
 /*
@@ -737,11 +741,11 @@ function undo() {
         set_vulnerability("ns", false);
         set_vulnerability("ew", false);
         let below_scores = {ns:0, ew:0};
-        for (let result of MatchResults) {
-            below_scores[result.winning_side] += result.score_below;
-            if (below_scores[result.winning_side] >= 100) {
+        for (let hand of MatchResults) {
+            below_scores[hand.winning_side] += hand.score_below;
+            if (below_scores[hand.winning_side] >= 100) {
                 below_scores = {ns:0, ew:0};
-                set_vulnerability(result.winning_side, true);
+                set_vulnerability(hand.winning_side, true);
             }
         }
     }
@@ -772,6 +776,111 @@ function clear_all() {
     TotalScore.ew = 0;
     show_accumulated_totals();
     show_dealer(null);
+}
+
+/*
+ * Stats functions
+ */
+
+function input_stats(ev) {
+    let stbe = document.getElementById("stats-table-body");
+    stbe.innerHTML = "";
+    let stats = stats_collect();
+    stats_add_row(stbe, "Contracts",
+                  stats.contracts_bid.ns, stats.contracts_made.ns,
+                  stats.contracts_bid.ew, stats.contracts_made.ew);
+    stats_add_row(stbe, "Games",
+                  stats.games_bid.ns, stats.games_made.ns,
+                  stats.games_bid.ew, stats.games_made.ew);
+    stats_add_row(stbe, "Part Scores",
+                  stats.part_scores_bid.ns, stats.part_scores_made.ns,
+                  stats.part_scores_bid.ew, stats.part_scores_made.ew);
+    stats_add_row(stbe, "Small Slams",
+                  stats.small_slams_bid.ns, stats.small_slams_made.ns,
+                  stats.small_slams_bid.ew, stats.small_slams_made.ew);
+    stats_add_row(stbe, "Grand Slams",
+                  stats.grand_slams_bid.ns, stats.grand_slams_made.ns,
+                  stats.grand_slams_bid.ew, stats.grand_slams_made.ew);
+    document.getElementById("stats-dialog").showModal();
+}
+
+function stats_close(ev) {
+    ev.preventDefault();
+    document.getElementById("stats-dialog").close();
+}
+
+function stats_collect() {
+    let stats = {
+        contracts_bid: { ns:0, ew:0 },
+        contracts_made: { ns:0, ew:0 },
+        games_bid: { ns:0, ew:0 },
+        games_made: { ns:0, ew:0 },
+        part_scores_bid: { ns:0, ew:0 },
+        part_scores_made: { ns:0, ew:0 },
+        small_slams_bid: { ns:0, ew:0 },
+        small_slams_made: { ns:0, ew:0 },
+        grand_slams_bid: { ns:0, ew:0 },
+        grand_slams_made: { ns:0, ew:0 },
+    }
+    for (let match of Matches)
+        stats_collect_match(stats, match);
+    stats_collect_match(stats, MatchResults);
+    return stats;
+}
+
+function stats_collect_match(stats, match) {
+    for (let hand of match) {
+        let side = SeatSide[hand.contract_info.declarer];
+        let made = (side == hand.winning_side);
+        stats.contracts_bid[side] += 1;
+        if (made)
+            stats.contracts_made[side] += 1;
+        if (is_game(hand.contract_info)) {
+            stats.games_bid[side] += 1;
+            if (made)
+                stats.games_made[side] += 1;
+        } else {
+            stats.part_scores_bid[side] += 1;
+            if (made)
+                stats.part_scores_made[side] += 1;
+        }
+        if (hand.contract_info.level == 6) {
+            stats.small_slams_bid[side] += 1;
+            if (made)
+                stats.small_slams_made[side] += 1;
+        }
+        if (hand.contract_info.level == 7) {
+            stats.grand_slams_bid[side] += 1;
+            if (made)
+                stats.grand_slams_made[side] += 1;
+        }
+    }
+}
+
+function is_game(contract_info) {
+    if (contract_info.suit == 'S' || contract_info.suit == 'H')
+        return contract_info.level >= 4;
+    else if (contract_info.suit == 'D' || contract_info.suit == 'C')
+        return contract_info.level >= 5;
+    else    /* Must be no trump */
+        return contract_info.level >= 3;
+}
+
+function stats_add_row(tbe, label, ns_bid, ns_made, ew_bid, ew_made) {
+    let tr = document.createElement("tr");
+    tbe.appendChild(tr);
+    let le = document.createElement("th");
+    le.classList.add("stats-label");
+    le.innerHTML = label;
+    tr.appendChild(le);
+    let nse = document.createElement("td");
+    nse.classList.add("stats-value");
+    nse.innerHTML = ns_made + '/' + ns_bid;
+    tr.appendChild(nse);
+    let ewe = document.createElement("td");
+    ewe.classList.add("stats-value");
+    ewe.innerHTML = ew_made + '/' + ew_bid;
+    tr.appendChild(ewe);
 }
 
 /*
@@ -816,9 +925,9 @@ function edit_name_close(ev) {
  */
 function part_scores() {
     let part_scores = {ns:0, ew:0};
-    for (let result of MatchResults) {
-        part_scores[result.winning_side] += result.score_below;
-        if (part_scores[result.winning_side] >= 100)
+    for (let hand of MatchResults) {
+        part_scores[hand.winning_side] += hand.score_below;
+        if (part_scores[hand.winning_side] >= 100)
             part_scores = {ns:0, ew:0};
     }
     return part_scores;
@@ -928,6 +1037,8 @@ window.onload = function() {
         .addEventListener("click", input_undo);
     document.getElementById("input-clear")
         .addEventListener("click", input_clear);
+    document.getElementById("input-stats")
+        .addEventListener("click", input_stats);
     document.getElementById("alert-close")
         .addEventListener("click", alert_hide);
     document.getElementById("confirm-yes")
@@ -936,6 +1047,8 @@ window.onload = function() {
         .addEventListener("click", confirm_no);
     document.getElementById("eom-close")
         .addEventListener("click", eom_close);
+    document.getElementById("stats-close")
+        .addEventListener("click", stats_close);
     document.getElementById("edit-name-input")
         .addEventListener("keydown", edit_name_finished);
     document.getElementById("edit-name-close")

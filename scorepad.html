@@ -220,6 +220,8 @@ C306.52,285.352,302.491,281.322,297.52,281.322z"/>
                     </tr>
                     <tr>
                         <td class="align-center" colspan="3">
+                            <input type="button" id="input-stats"
+                                   class="input-action" value="Stats"/>
                             <input type="button" id="input-clear"
                                    class="input-action" value="Clear"/>
                             <input type="button" id="input-undo"
@@ -322,10 +324,30 @@ C306.52,285.352,302.491,281.322,297.52,281.322z"/>
     <div id="edit-name-content" class="dialog-content">
         <span class="edit-name-label">North</span>
         <input type="text" id="edit-name-input"
-               class="edit-name-input" placeholder="Conrad" autofocus/>
+               class="edit-name-input" placeholder="Name" autofocus/>
         <div class="dialog-buttons">
             <input type="button" class="dialog-button"
                    id="edit-name-close" value="Okay"/>
+        </div>
+    </div>
+</dialog>
+<dialog id="stats-dialog" class="dialog">
+    <div id="stats-content" class="dialog-content">
+        <div id="stats-data" class="stats-data">
+            <table class="stats-table">
+                <thead>
+                    <tr>
+                        <th class="stats-header"></th>
+                        <th class="stats-header">Bid</th>
+                        <th class="stats-header">Made</th>
+                    </tr>
+                </thead>
+                <tbody id="stats-table-body"></tbody>
+            </table>
+        </div>
+        <div class="dialog-buttons">
+            <input type="button" class="dialog-button"
+                   id="stats-close" value="Okay" autofocus/>
         </div>
     </div>
 </dialog>
