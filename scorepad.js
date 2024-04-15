@@ -811,19 +811,19 @@ function stats_click(ev) {
     let stbe = document.getElementById("stats-table-body");
     stbe.innerHTML = "";
     let stats = stats_collect();
-    stats_add_row(stbe, "Contracts",
+    stats_add_row(stbe, "Contracts", "",
                   stats.contracts_bid.ns, stats.contracts_made.ns,
                   stats.contracts_bid.ew, stats.contracts_made.ew);
-    stats_add_row(stbe, "Games",
+    stats_add_row(stbe, "Games", "",
                   stats.games_bid.ns, stats.games_made.ns,
                   stats.games_bid.ew, stats.games_made.ew);
-    stats_add_row(stbe, "Part Scores",
+    stats_add_row(stbe, "Part Scores", "stats-separator",
                   stats.part_scores_bid.ns, stats.part_scores_made.ns,
                   stats.part_scores_bid.ew, stats.part_scores_made.ew);
-    stats_add_row(stbe, "Small Slams",
+    stats_add_row(stbe, "Small Slams", "",
                   stats.small_slams_bid.ns, stats.small_slams_made.ns,
                   stats.small_slams_bid.ew, stats.small_slams_made.ew);
-    stats_add_row(stbe, "Grand Slams",
+    stats_add_row(stbe, "Grand Slams", "",
                   stats.grand_slams_bid.ns, stats.grand_slams_made.ns,
                   stats.grand_slams_bid.ew, stats.grand_slams_made.ew);
     document.getElementById("stats-dialog").showModal();
@@ -882,19 +882,25 @@ function stats_collect_match(stats, match) {
     }
 }
 
-function stats_add_row(tbe, label, ns_bid, ns_made, ew_bid, ew_made) {
+function stats_add_row(tbe, label, klass, ns_bid, ns_made, ew_bid, ew_made) {
     let tr = document.createElement("tr");
     tbe.appendChild(tr);
     let le = document.createElement("th");
     le.classList.add("stats-label");
+    if (klass)
+        le.classList.add(klass);
     le.innerHTML = label;
     tr.appendChild(le);
     let nse = document.createElement("td");
     nse.classList.add("stats-value");
+    if (klass)
+        nse.classList.add(klass);
     nse.innerHTML = ns_made + '/' + ns_bid;
     tr.appendChild(nse);
     let ewe = document.createElement("td");
     ewe.classList.add("stats-value");
+    if (klass)
+        ewe.classList.add(klass);
     ewe.innerHTML = ew_made + '/' + ew_bid;
     tr.appendChild(ewe);
 }

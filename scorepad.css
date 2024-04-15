@@ -262,13 +262,16 @@ dialog::backdrop {
     margin: 1rem;
 }
 .stats-table {
+    border-collapse: collapse;
     font-size:24pt;
-    border-spacing: 0.2rem;
 }
 .stats-header {
     text-align: center;
     padding-left: 1rem;
     padding-right: 1rem;
+}
+.stats-separator {
+    border-bottom: 2px solid;
 }
 .stats-label {
     text-align: right;
