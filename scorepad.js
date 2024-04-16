@@ -661,7 +661,7 @@ function contract_parse(s) {
     return { whole: parts[0],
              level: parts[1],
              suit: parts[2],
-             doubled: parts[3],
+             doubled: parts[3].toLowerCase(),
              declarer: parts[4] }
 }
 

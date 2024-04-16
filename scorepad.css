@@ -52,10 +52,10 @@ input, select {
     flex-grow: 0;
 }
 .system-label {
-    font-size: 20pt;
+    font-size: 2rem;
 }
 .system {
-    font-size: 20pt;
+    font-size: 2rem;
 }
 
 .ui-panel {
@@ -105,7 +105,7 @@ input, select {
 .seat-name {
     /* font-size in svg seems a bit different than outside, so
      * these sizes were determined empirically */
-    font-size: 6pt;
+    font-size: 0.6rem;
 }
 .dealer {
     fill: lightgray;
@@ -118,13 +118,13 @@ input, select {
     stroke-width: 15;
 }
 .contract {
-    font-size: 12pt;
+    font-size: 1.2rem;
 }
 
 .input-panel {
     display: inline-block;
     margin-left: 0.5rem;
-    font-size:20pt;
+    font-size: 2rem;
     flex-grow: 0;
 }
 .ui-table {
@@ -135,11 +135,11 @@ input, select {
 }
 .input-deal {
     width: 10rem;
-    font-size:30pt;
+    font-size: 2.5rem;
     /* Font needs to be big enough to avoid autozoom on iPhone */
 }
 .input-action {
-    font-size:20pt;
+    font-size: 1.6rem;
 }
 
 .match-panel {
@@ -147,10 +147,10 @@ input, select {
     flex-grow: 0;
 }
 .match-label {
-    font-size: 20pt;
+    font-size: 1.6rem;
 }
 .match {
-    font-size: 20pt;
+    font-size: 1.6rem;
 }
 
 .score-panel {
@@ -162,7 +162,7 @@ input, select {
     border: 1px solid black;
     border-spacing: 0;
     border-collapse: collapse;
-    font-size:24pt;
+    font-size: 2rem;
 }
 .scorepad th {
     padding: 0;
@@ -245,25 +245,25 @@ dialog::backdrop {
     padding: 20px;
     border: 3px solid red;
     width: 80%;
-    font-size: 20pt;
+    font-size: 1.6rem;
 }
 .dialog-buttons {
     width: 100%;
     text-align: right;
 }
 .dialog-button {
-    font-size: 20pt;
+    font-size: 1.6rem;
 }
 .edit-name-input {
     width: 8rem;
-    font-size:20pt;
+    font-size: 1.6rem;
 }
 .stats-data {
     margin: 1rem;
 }
 .stats-table {
     border-collapse: collapse;
-    font-size:24pt;
+    font-size: 2rem;
 }
 .stats-header {
     text-align: center;
