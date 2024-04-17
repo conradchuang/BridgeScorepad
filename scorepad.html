@@ -243,49 +243,53 @@ C306.52,285.352,302.491,281.322,297.52,281.322z"/>
     </div>
     <div class="score-panel">
         <table id="scorepad" class="scorepad">
-            <thead>
-                <tr class="score-header">
-                    <th class="align-center">North-South</th>
-                    <th class="align-center">East-West</th>
-                </tr>
-            </thead>
             <tbody>
-                <tr id="above-the-line" class="above-line-row">
-                    <td id="score-ns-above" class="above-line">
-                        <table id="ns-above" class="score-above">
-                        </table>
-                    </td>
-                    <td id="score-ew-above" class="above-line">
-                        <table id="ew-above" class="score-above">
-                        </table>
-                    </td>
-                </tr>
-                <tr id="below-the-line" class="below-line-row">
-                    <td id="score-ns-below" class="below-line">
-                        <table id="ns-below" class="score-below">
-                        </table>
-                    </td>
-                    <td id="score-ew-below" class="below-line">
-                        <table id="ew-below" class="score-below">
-                        </table>
-                    </td>
-                </tr>
-                <tr class="match-row">
-                    <td class="score-value score-match">
-                        <span id="score-ns-match"></span>
-                    </td>
-                    <td class="score-value score-match">
-                        <span id="score-ew-match"></span>
-                    </td>
-                </tr>
-                <tr class="total-row">
-                    <td class="score-value score-total">
-                        <span id="score-ns-total"></span>
-                    </td>
-                    <td class="score-value score-total">
-                        <span id="score-ew-total"></span>
-                    </td>
-                </tr>
+            <tr class="score-header">
+                <th class="align-center">North-South</th>
+                <th class="align-center">East-West</th>
+            </tr>
+            <tr id="score-hands" class="score-hands">
+                <td colspan="2">
+                    <table id="score-hands-table" class="score-hands-table">
+                        <tr id="above-the-line" class="above-line-row">
+                            <td id="score-ns-above" class="above-line above-ns">
+                                <table id="ns-above" class="score-above">
+                                </table>
+                            </td>
+                            <td id="score-ew-above" class="above-line above-ew">
+                                <table id="ew-above" class="score-above">
+                                </table>
+                            </td>
+                        </tr>
+                        <tr id="below-the-line" class="below-line-row">
+                            <td id="score-ns-below" class="below-line below-ns">
+                                <table id="ns-below" class="score-below">
+                                </table>
+                            </td>
+                            <td id="score-ew-below" class="below-line below-ew">
+                                <table id="ew-below" class="score-below">
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr class="match-row">
+                <td class="score-value score-match">
+                    <span id="score-ns-match"></span>
+                </td>
+                <td class="score-value score-match">
+                    <span id="score-ew-match"></span>
+                </td>
+            </tr>
+            <tr class="total-row">
+                <td class="score-value score-total">
+                    <span id="score-ns-total"></span>
+                </td>
+                <td class="score-value score-total">
+                    <span id="score-ew-total"></span>
+                </td>
+            </tr>
             </tbody>
         </table>
     </div>  <!-- score-panel -->

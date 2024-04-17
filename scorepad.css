@@ -173,35 +173,64 @@ input, select {
     padding: 0;
 }
 .score-header {
+    height: 1%;     /* 1% -- or taller if necessary */
 }
-.score-header th, .match-row td, .total-row td {
-    height: 28pt;
+.score-hands {
+    /* Takes up remaining height for current match scores */
+}
+.match-row {
+    height: 1%;
+}
+.total-row {
+    background-color: lightgray;
+    height: 1%;
+}
+.score-hands-table {
+    width: 100%;
+    height: 100%;
+    border: 1px solid black;
+    border-spacing: 0;
+    border-collapse: collapse;
 }
 .above-line-row {
-    height: 40%;
+    height: 50%;
 }
 .below-line-row {
-    height: 35%;
+    height: 50%;
 }
 .below-line-row-duplicate {
-    height: 75%;
 }
 .above-line, .below-line {
     width: 50%;
-    border: 1px solid black;
 }
 .above-line {
     vertical-align: bottom;
 }
+.above-ns {
+    border-bottom: 2px solid black;
+    border-right: 2px solid black;
+}
+.above-ew {
+    border-bottom: 2px solid black;
+    border-left: 2px solid black;
+}
 .below-line {
     vertical-align: top;
+}
+.below-ns {
+    border-above: 2px solid black;
+    border-right: 2px solid black;
+}
+.below-ew {
+    border-above: 2px solid black;
+    border-left: 2px solid black;
 }
 .score-above, .score-below {
     border-collapse: collapse;
     width: 100%;
 }
 .score-game {
-    border-bottom: 1px solid black;
+    border-bottom: 2px solid red;
 }
 .score-contract {
     text-align: left;
@@ -214,9 +243,6 @@ input, select {
     border-right: 2px solid black;
     border-bottom: 0;
     border-top: 2px double black;
-}
-.total-row {
-    background-color: lightgray;
 }
 .score-total {
     border-left: 2px solid black;
@@ -245,18 +271,18 @@ dialog::backdrop {
     padding: 20px;
     border: 3px solid red;
     width: 80%;
-    font-size: 1.6rem;
+    font-size: 2rem;
 }
 .dialog-buttons {
     width: 100%;
     text-align: right;
 }
 .dialog-button {
-    font-size: 1.6rem;
+    font-size: 2rem;
 }
 .edit-name-input {
     width: 8rem;
-    font-size: 1.6rem;
+    font-size: 2rem;
 }
 .stats-data {
     margin: 1rem;
