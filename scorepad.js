@@ -949,7 +949,7 @@ function edit_name_close(ev) {
 function system_click(ev) {
     confirm_show("Switch to " + this.value + " scoring?<br/>" +
                  "All current and total scores will be erased.",
-                 system_set.bind(this, this.value), null);
+                 system_set.bind(this, this.value), system_reset.bind(this));
 }
 
 function system_set(system) {
@@ -970,6 +970,10 @@ function system_set(system) {
     }
     clear_all();
     ScoreSystem = system;
+}
+
+function system_reset() {
+    this.value = ScoreSystem;
 }
 
 /*
