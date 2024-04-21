@@ -6,6 +6,7 @@
 <title>Bridge Score Pad</title>
 <link rel="stylesheet" type="text/css" href="scorepad.css"/>
 <script src="scorepad.js"></script>
+<script src="jsgfparser.js"></script>
 </head>
 <body>
 <div class="app-div">
@@ -206,14 +207,22 @@ C306.52,285.352,302.491,281.322,297.52,281.322z"/>
                 <tbody>
                     <tr>
                         <td class="align-right">Contract</td>
-                        <td colspan="2"><input type="text" id="input-contract"
-                                   class="input-deal" placeholder="4SxW"/></td>
+                        <td colspan="2">
+                            <input type="text" id="input-contract"
+                                   class="input-deal" placeholder="4SxW"/>
+                            <input type="button" id="speech-contract"
+                                   class="input-action" value="&#x1F399;"/>
+                       </td>
                     </tr>
                     <tr>
                         <td class="align-right">Result</td>
-                        <td colspan="2"><input type="text" id="input-result"
+                        <td colspan="2">
+                            <input type="text" id="input-result"
                                    class="input-deal"
-                                   placeholder="+4" disabled/></td>
+                                   placeholder="+4" disabled/>
+                            <input type="button" id="speech-result"
+                                   class="input-action" value="&#x1F399;"/>
+                       </td>
                     </tr>
                     <tr>
                         <td>&nbsp;</td>

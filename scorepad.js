@@ -64,6 +64,32 @@ REContractDetails = /([1234567])([NSHDC])(X{0,2})([NESW])/;
 /* Result is of form "[+-]#" */
 REResult = /([-+]?)(\d+)/;
 
+/* Speech recognition stuff */
+const SpeechRecognition =
+  window.SpeechRecognition || window.webkitSpeechRecognition;
+const SpeechGrammarList =
+  window.SpeechGrammarList || window.webkitSpeechGrammarList;
+const SpeechRecognitionEvent =
+  window.SpeechRecognitionEvent || window.webkitSpeechRecognitionEvent;
+const recognition_contract = new SpeechRecognition();
+const recognition_result = new SpeechRecognition();
+const speechRecognitionList = new SpeechGrammarList();
+/* TODO: much more here */
+const grammar = "#JSGF V1.0; grammar bridge; public <color> = azure | beige | green";
+speechRecognitionList.addFromString(grammar, 1);
+/* end TODO */
+recognition_contract.grammar = speechRecognitionList;
+recognition_contract.continuous = false;
+recognition_contract.lang = "en-US";
+recognition_contract.interimResults = false;
+recognition_contract.maxAlternatives = 1;
+recognition_result.grammar = speechRecognitionList;
+recognition_result.continuous = false;
+recognition_result.lang = "en-US";
+recognition_result.interimResults = false;
+recognition_result.maxAlternatives = 1;
+
+
 /*
  * Miscellaneous utility functions
  */
@@ -977,6 +1003,56 @@ function system_reset() {
 }
 
 /*
+ * Speech recognition
+ */
+
+function speech_contract_start(ev) {
+    console.log("start contract speech recognition");
+    recognition_contract.start();
+}
+
+function speech_contract_end(ev) {
+    console.log("end contract speech recognition");
+    recognition_contract.stop();
+}
+
+function speech_contract_result(ev) {
+    console.log("contract speech recognition result");
+    console.log(ev.results[0][0].transcript);
+}
+
+function speech_contract_nomatch(ev) {
+    console.log("no match in contract speech recognition");
+}
+
+function speech_contract_error(ev) {
+    console.log("contract speech recognition error: " + ev.error);
+}
+
+function speech_result_start(ev) {
+    console.log("start result speech recognition");
+    recognition_result.start();
+}
+
+function speech_result_end(ev) {
+    console.log("end result speech recognition");
+    recognition_result.stop();
+}
+
+function speech_result_result(ev) {
+    console.log("result speech recognition result");
+    console.log(ev.results[0][0].transcript);
+}
+
+function speech_result_nomatch(ev) {
+    console.log("no match in result speech recognition");
+}
+
+function speech_result_error(ev) {
+    console.log("result speech recognition error: " + ev.error);
+}
+
+/*
  * Utility functions
  */
 
@@ -1066,6 +1142,27 @@ window.onload = function() {
         .addEventListener("change", system_click);
     document.getElementById("match")
         .addEventListener("change", match_update_selected);
+
+    document.getElementById("speech-contract")
+        .addEventListener("click", speech_contract_start);
+    recognition_contract
+        .addEventListener("speechend", speech_contract_end);
+    recognition_contract
+        .addEventListener("result", speech_contract_result);
+    recognition_contract
+        .addEventListener("nomatch", speech_contract_nomatch);
+    recognition_contract
+        .addEventListener("error", speech_contract_error);
+    document.getElementById("speech-result")
+        .addEventListener("click", speech_result_start);
+    recognition_result
+        .addEventListener("speechend", speech_result_end);
+    recognition_result
+        .addEventListener("result", speech_result_result);
+    recognition_result
+        .addEventListener("nomatch", speech_result_nomatch);
+    recognition_result
+        .addEventListener("error", speech_result_error);
 
     /* Finish setup */
     match_update();
