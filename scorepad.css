@@ -10,6 +10,7 @@ body {
     height: 100vh;
     width: 100vw;
     font-family: sans-serif;
+    background: honeydew;
 }
 * {
     box-sizing: border-box;
@@ -85,7 +86,7 @@ input, select {
     fill: none;
 }
 .vulnerable {
-    fill: lemonchiffon;
+    fill: cornsilk;
 }
 .nonvul {
     /*
@@ -142,7 +143,7 @@ input, select {
     font-size: 1.6rem;
 }
 .input-listening {
-    background: lemonchiffon;
+    background: cornsilk;
 }
 
 .match-panel {
@@ -158,6 +159,7 @@ input, select {
 
 .score-panel {
     flex-grow: 1;
+    background: cornsilk;
 }
 .scorepad {
     width: 100%;
