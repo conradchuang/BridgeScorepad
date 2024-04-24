@@ -65,29 +65,12 @@ REContractDetails = /([1234567])([NSHDC])(X{0,2})([NESW])/;
 REResult = /([-+]?)(\d+)/;
 
 /* Speech recognition stuff */
-const SpeechRecognition =
-  window.SpeechRecognition || window.webkitSpeechRecognition;
-const SpeechGrammarList =
-  window.SpeechGrammarList || window.webkitSpeechGrammarList;
-const SpeechRecognitionEvent =
-  window.SpeechRecognitionEvent || window.webkitSpeechRecognitionEvent;
-const recognition_contract = new SpeechRecognition();
-const recognition_result = new SpeechRecognition();
-const speechRecognitionList = new SpeechGrammarList();
-/* TODO: much more here */
-const grammar = "#JSGF V1.0; grammar bridge; public <color> = azure | beige | green";
-speechRecognitionList.addFromString(grammar, 1);
-/* end TODO */
-recognition_contract.grammar = speechRecognitionList;
-recognition_contract.continuous = false;
-recognition_contract.lang = "en-US";
-recognition_contract.interimResults = false;
-recognition_contract.maxAlternatives = 1;
-recognition_result.grammar = speechRecognitionList;
-recognition_result.continuous = false;
-recognition_result.lang = "en-US";
-recognition_result.interimResults = false;
-recognition_result.maxAlternatives = 1;
+const SpeechRecognition = window.SpeechRecognition ||
+                          window.webkitSpeechRecognition;
+const SpeechGrammarList = window.SpeechGrammarList ||
+                          window.webkitSpeechGrammarList;
+recognition = null;
+SpeechParser = null;
 
 
 /*
@@ -442,7 +425,7 @@ function scorepad_update(contract_info, result, redisplay) {
                  * 300 for tricks -2 and -3 +
                  * 200 for tricks -1 */
                 if (tricks <= -2) {
-                    undertricks = tricks + 1 * 300 - 200;
+                    undertricks = (tricks + 1) * 300 - 200;
                 } else {
                     undertricks = -200;
                 }
@@ -451,7 +434,7 @@ function scorepad_update(contract_info, result, redisplay) {
                  * 600 for tricks -2 and -3 +
                  * 400 for tricks -1 */
                 if (tricks <= -2) {
-                    undertricks = tricks + 1 * 600 - 400;
+                    undertricks = (tricks + 1) * 600 - 400;
                 } else {
                     undertricks = -400;
                 }
@@ -464,9 +447,9 @@ function scorepad_update(contract_info, result, redisplay) {
                  * 200 for tricks -2 and -3 +
                  * 100 for tricks -1 */
                 if (tricks <= -4) {
-                    undertricks = tricks + 3 * 300 - 2*200 - 100;
+                    undertricks = (tricks + 3) * 300 - 2*200 - 100;
                 } else if (tricks <= -2) {
-                    undertricks = tricks + 1 * 200 - 100;
+                    undertricks = (tricks + 1) * 200 - 100;
                 } else {
                     undertricks = -100;
                 }
@@ -475,9 +458,9 @@ function scorepad_update(contract_info, result, redisplay) {
                  * 400 for tricks -2 and -3 +
                  * 200 for tricks -1 */
                 if (tricks <= -4) {
-                    undertricks = tricks + 3 * 600 - 2*400 - 200;
+                    undertricks = (tricks + 3) * 600 - 2*400 - 200;
                 } else if (tricks <= -2) {
-                    undertricks = tricks + 1 * 400 - 200;
+                    undertricks = (tricks + 1) * 400 - 200;
                 } else {
                     undertricks = -200;
                 }
@@ -660,12 +643,16 @@ function contract_update(ev) {
     if (ev.keyCode != 13)
         return;
     ev.preventDefault();
-    let contract_info = contract_parse(this.value);
+    contract_show(this.value);
+}
+
+function contract_show(contract) {
+    let contract_info = contract_parse(contract);
     if (contract_info == null) {
         alert_show("That is not a valid contract.", contract_focus);
         return;
     }
-    this.value = contract_info.whole;
+    document.getElementById("input-contract").value = contract_info.whole;
     /* Display final contract on board */
     let seat = SeatAbbr[contract_info.declarer];
     for (let s in NextSeat) {
@@ -746,7 +733,11 @@ function result_update(ev) {
     if (ev.keyCode != 13)
         return;
     ev.preventDefault();
-    let result_info = result_parse(this.value);
+    result_show(this.value);
+}
+
+function result_show(result) {
+    let result_info = result_parse(result);
     if (result_info == null) {
         alert_show("That is not a valid result.", null);
         return;
@@ -1006,50 +997,51 @@ function system_reset() {
  * Speech recognition
  */
 
-function speech_contract_start(ev) {
-    console.log("start contract speech recognition");
-    recognition_contract.start();
+function speech_start(ev) {
+    recognition.start();
+    document.getElementById("speech-button")
+        .classList.add("input-listening");
 }
 
-function speech_contract_end(ev) {
-    console.log("end contract speech recognition");
-    recognition_contract.stop();
+function speech_end(ev) {
+    recognition.stop();
+    document.getElementById("speech-button")
+        .classList.remove("input-listening");
 }
 
-function speech_contract_result(ev) {
-    console.log("contract speech recognition result");
-    console.log(ev.results[0][0].transcript);
+function speech_result(ev) {
+    /*
+    console.debug("speech recognition result");
+    console.debug(ev.results[0][0].transcript);
+    */
+    try {
+        let sr = speech_extract(ev.results[0][0].transcript);
+        switch (sr[0]) {
+            case "contract":
+                contract_show(sr[1]);
+                break;
+            case "result":
+                let result = document.getElementById("input-result");
+                if (result.disabled)
+                    alert_show("Contract has not been set yet", null);
+                else
+                    result_show(sr[1]);
+                break;
+        }
+    } catch (err) {
+        alert_show("speech recognition: " + err.message, null);
+    }
 }
 
-function speech_contract_nomatch(ev) {
-    console.log("no match in contract speech recognition");
+function speech_nomatch(ev) {
+    alert_show("speech recognition error: " +
+               "grammatical error: " + ev.message, null);
 }
 
-function speech_contract_error(ev) {
-    console.log("contract speech recognition error: " + ev.error);
-}
-
-function speech_result_start(ev) {
-    console.log("start result speech recognition");
-    recognition_result.start();
-}
-
-function speech_result_end(ev) {
-    console.log("end result speech recognition");
-    recognition_result.stop();
-}
-
-function speech_result_result(ev) {
-    console.log("result speech recognition result");
-    console.log(ev.results[0][0].transcript);
-}
-
-function speech_result_nomatch(ev) {
-    console.log("no match in result speech recognition");
-}
-
-function speech_result_error(ev) {
-    console.log("result speech recognition error: " + ev.error);
+function speech_error(ev) {
+    alert_show("speech recognition error: " +
+               "internal error: " + ev.error +
+               ": " + ev.message, null);
 }
 
 /*
@@ -1143,26 +1135,30 @@ window.onload = function() {
     document.getElementById("match")
         .addEventListener("change", match_update_selected);
 
-    document.getElementById("speech-contract")
-        .addEventListener("click", speech_contract_start);
-    recognition_contract
-        .addEventListener("speechend", speech_contract_end);
-    recognition_contract
-        .addEventListener("result", speech_contract_result);
-    recognition_contract
-        .addEventListener("nomatch", speech_contract_nomatch);
-    recognition_contract
-        .addEventListener("error", speech_contract_error);
-    document.getElementById("speech-result")
-        .addEventListener("click", speech_result_start);
-    recognition_result
-        .addEventListener("speechend", speech_result_end);
-    recognition_result
-        .addEventListener("result", speech_result_result);
-    recognition_result
-        .addEventListener("nomatch", speech_result_nomatch);
-    recognition_result
-        .addEventListener("error", speech_result_error);
+    if (SpeechRecognition != undefined) {
+        recognition = new SpeechRecognition();
+        speechRecognitionList = new SpeechGrammarList();
+        /*
+        const grammar = "#JSGF V1.0; grammar bridge; public <color> = azure | beige | green";
+        speechRecognitionList.addFromString(grammar, 1);
+        */
+        speechRecognitionList.addFromString(BridgeScoreGrammar, 1);
+        recognition.grammar = speechRecognitionList;
+        recognition.continuous = false;
+        recognition.lang = "en-US";
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+        recognition.addEventListener("speechend", speech_end);
+        recognition.addEventListener("result", speech_result);
+        recognition.addEventListener("nomatch", speech_nomatch);
+        recognition.addEventListener("error", speech_error);
+        SpeechParser = new JSGFParser(BridgeScoreGrammar);
+        document.getElementById("speech-button")
+            .addEventListener("click", speech_start);
+        /* bridge_grammar_test(); */
+    } else {
+        document.getElementById("speech-button").style.display = "none";
+    }
 
     /* Finish setup */
     match_update();

@@ -141,6 +141,9 @@ input, select {
 .input-action {
     font-size: 1.6rem;
 }
+.input-listening {
+    background: lemonchiffon;
+}
 
 .match-panel {
     text-align: center;
@@ -164,13 +167,9 @@ input, select {
     border-collapse: collapse;
     font-size: 2.5rem;
 }
-.scorepad th {
-    padding: 0;
+.scorepad > tbody > tr > th {
     width: 50%;
     border: 1px solid black;
-}
-.scorepad td {
-    padding: 0;
 }
 .score-header {
     height: 1%;     /* 1% -- or taller if necessary */
@@ -234,9 +233,11 @@ input, select {
 }
 .score-contract {
     text-align: left;
+    padding-left: 0.5rem;
 }
 .score-value {
     text-align: right;
+    padding-right: 0.5rem;
 }
 .score-match {
     border-left: 2px solid black;

@@ -32,7 +32,7 @@ class JSGFParser {
         this._read_header();
         this._read_grammar();
         /* XXX this._read_imports(); */
-        this._read_productions();
+        this._read_rules();
         this._verify();
     }
 
@@ -83,9 +83,10 @@ class JSGFParser {
             throw new SyntaxError("bad name line [3]");
     }
 
-    _read_productions() {
+    _read_rules() {
         let t = this._next_token();
-        this.productions = {}
+        this.rules = {}
+        this.public_rules = [];
         while (t[0] != Token_EOF) {
             /* t is already set to first token of this rule */
             let is_public = false;
@@ -95,8 +96,13 @@ class JSGFParser {
             }
             if (t[0] != Token_Rule)
                 throw new SyntaxError("bad rule [1]");
-            let p = new _Production(is_public, t[1]);
-            this.productions[t[1]] = p;
+            let rule_name = t[1];
+            let p = new _Production(is_public, rule_name);
+            if (this.rules.hasOwnProperty(rule_name))
+                console.warn("rule redefined: " + rule_name);
+            this.rules[rule_name] = p;
+            if (is_public)
+                this.public_rules.push(rule_name);
             t = this._next_token();
             if (t[0] != Token_Symbol && t[1] != "=")
                 throw new SyntaxError("bad rule [2]");
@@ -149,9 +155,22 @@ class JSGFParser {
     }
 
     _verify() {
+        /* This cannot happen since public rules are always added
+         * to both this.public_rules and this.rules */
+        for (let public_rule of this.public_rules) {
+            if (!this.rules.hasOwnProperty(public_rule))
+                console.error("missing public rule: " + public_rule);
+        }
+        /* Make sure all referenced rules are defined */
+        for (let rule_name in this.rules) {
+            let rule = this.rules[rule_name];
+            for (let ref_rule of rule.referenced_rules())
+                if (!this.rules.hasOwnProperty(ref_rule))
+                    console.error("missing referenced rule: " + ref_rule);
+        }
     }
 
-    str_header() {
+    _str_header() {
         let parts = ["#JSGF", this.jsgf_version];
         if (this.jsgf_encoding != null)
             parts.push(this.jsgf_encoding);
@@ -160,20 +179,46 @@ class JSGFParser {
         return parts.join(" ") + ";";
     }
 
-    str_grammar() {
+    _str_name() {
         return "grammar " + this.grammar_name + ";";
     }
 
-    str_productions() {
-        let rule_names = Object.keys(this.productions).sort();
-        let production_strs = [];
+    _str_rules() {
+        let rule_names = Object.keys(this.rules).sort();
+        let rule_strs = [];
         for (let name of rule_names)
-            production_strs.push(this.productions[name].str());
-        return production_strs.join("\n");
+            rule_strs.push(this.rules[name].str());
+        return rule_strs.join("\n");
+    }
+
+    str_grammar() {
+        return [this._str_header(),
+                this._str_name(),
+                this._str_rules()].join("\n");
     }
 
     parse(input) {
         /* Return parse tree or throw exception */
+        /* Assume that input is whitespace delimited */
+        let words = new Words(input);
+        /*
+        console.debug("parse: " + input);
+        */
+        for (let public_rule of this.public_rules) {
+            /*
+            console.debug("check rule: " + public_rule);
+            */
+            try {
+                let p = this.rules[public_rule];
+                return { etype: Expr_Rule, ename: public_rule,
+                         value: p.parse(this.rules, words) };
+            } catch(err) {
+                /*
+                console.debug("no match with " + public_rule);
+                */
+            }
+        }
+        throw new Error("no match with any public rules");
     }
 }
 
@@ -379,6 +424,17 @@ class _Production {
         return parts.join(" ") + ";";
     }
 
+    parse(rules, words) {
+        /*
+        console.debug("production parse: " + this.name);
+        */
+        return this.expr.parse(rules, words);
+    }
+
+    *referenced_rules() {
+        yield* this.expr.referenced_rules();
+    }
+
 }
 
 class _Expr {
@@ -437,7 +493,7 @@ class _Expr {
     }
 
     add_weight(s) {
-        console.log("weight: " + s);
+        console.debug("weight: " + s);
     }
 
     add_group() {
@@ -486,32 +542,99 @@ class _Expr {
         }
     }
 
+    parse(rules, words) {
+        /*
+        console.debug("parse " + this.etype + " (" + words.current_index() +
+                      ") : " + words.current());
+        */
+        let start = words.current_index();
+        switch (this.etype) {
+          case Expr_String:
+            if (words.current() == this.value) {
+                words.consume();
+                return { etype: Expr_String, value: this.value };
+            } else
+                throw new RangeError("no match with word: " + this.value);
+            break;
+          case Expr_Rule:
+            let rule = rules[this.value];
+            return { etype: Expr_Rule, ename: rule.name,
+                     value: rule.parse(rules, words) };
+            break;
+          case Expr_Group:
+          case Expr_Optional:
+            for (let alt of this.value) {
+                let value_list = [];
+                try {
+                    words.set_index(start);
+                    for (let expr of alt)
+                        value_list.push(expr.parse(rules, words));
+                    value_list.etype = this.etype;
+                    /*
+                    let sa = alt.map(e => e.str());
+                    console.debug("match list: " + sa.join(" "));
+                    */
+                    return value_list;
+                } catch(err) {
+                    /*
+                    let sa = alt.map(e => e.str());
+                    console.debug("no match with list: " + sa.join(" "));
+                    */
+                }
+            }
+            /* Fell through, so no match */
+            words.set_index(start);
+            if (this.min_count >= 1)
+                throw new RangeError("no match with group");
+            break;
+        }
+    }
+
+    *referenced_rules() {
+        switch (this.etype) {
+          case Expr_String:
+              /* No rules referenced here */
+              break;
+          case Expr_Rule:
+              yield this.value;
+              break;
+          case Expr_Group:
+          case Expr_Optional:
+            for (let alt of this.value)
+                for (let expr of alt)
+                    yield* expr.referenced_rules();
+            break;
+        }
+    }
+
 }
 
+class Words {
 
-test_grammar = `#JSGF V1.0;
+    constructor(input) {
+        this.input = input;
+        this.words = input.toLowerCase().split(/\s+/);
+        this.n = 0;
+    }
 
-grammar bridge;
+    current() {
+        return this.words[this.n];
+    }
 
-public <contract> = <level> <suit> [ <doubt> ] [ by ] <seat>;
-<level> = one | two | three | four | five | six | seven;
-<suit> = <spades> | <hearts> | <diamonds> | <club> | <notrump>;
-<spades> = spades | spade;
-<hearts> = hearts | heart;
-<diamondss> = diamondss | diamonds;
-<clubs> = clubs | club;
-<notrump> = no [ trump ];
-<doubt> = <doubled> | <redoubled>;
-<doubled> = doubled | double;
-<redoubled> = redoubled | redouble;
-<seat> = north | east | south | west;
+    peek(n) {
+        return this.words[n];
+    }
 
-public <result> = <sign> <count>;
-<sign> = <made> | <down>;
-<made> = made | making;
-<down> = down | set;
-<count> = one | two | three | four | five | six | seven |
-          eight | nine | ten | eleven | twelve | thirteen;`
+    consume() {
+        this.n += 1;
+    }
 
-// let parser = new JSGFParser(test_grammar);
-// console.log(parser);
+    current_index() {
+        return this.n;
+    }
+
+    set_index(n) {
+        this.n = n;
+    }
+
+}
