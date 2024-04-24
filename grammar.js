@@ -56,8 +56,8 @@ function bridge_grammar_test() {
     console.log(parser.parse("down 4"));
 }
 
-function speech_extract(text) {
-    let pt = SpeechParser.parse(text);
+function speech_extract(parser, text) {
+    let pt = parser.parse(text);
     /*
     console.debug(pt);
     */

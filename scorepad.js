@@ -65,12 +65,8 @@ REContractDetails = /([1234567])([NSHDC])(X{0,2})([NESW])/;
 REResult = /([-+]?)(\d+)/;
 
 /* Speech recognition stuff */
-const SpeechRecognition = window.SpeechRecognition ||
-                          window.webkitSpeechRecognition;
-const SpeechGrammarList = window.SpeechGrammarList ||
-                          window.webkitSpeechGrammarList;
 recognition = null;
-SpeechParser = null;
+speech_parser = null;
 
 
 /*
@@ -1015,7 +1011,7 @@ function speech_result(ev) {
     console.debug(ev.results[0][0].transcript);
     */
     try {
-        let sr = speech_extract(ev.results[0][0].transcript);
+        let sr = speech_extract(speech_parser, ev.results[0][0].transcript);
         switch (sr[0]) {
             case "contract":
                 contract_show(sr[1]);
@@ -1135,15 +1131,17 @@ window.onload = function() {
     document.getElementById("match")
         .addEventListener("change", match_update_selected);
 
-    if (SpeechRecognition != undefined) {
-        recognition = new SpeechRecognition();
-        speechRecognitionList = new SpeechGrammarList();
+    try {
+        SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SR();
+        SGL = window.SpeechGrammarList || window.webkitSpeechGrammarList;
+        let sgl = new SGL();
         /*
         const grammar = "#JSGF V1.0; grammar bridge; public <color> = azure | beige | green";
-        speechRecognitionList.addFromString(grammar, 1);
+        sgl.addFromString(grammar, 1);
         */
-        speechRecognitionList.addFromString(BridgeScoreGrammar, 1);
-        recognition.grammar = speechRecognitionList;
+        sgl.addFromString(BridgeScoreGrammar, 1);
+        recognition.grammar = sgl;
         recognition.continuous = false;
         recognition.lang = "en-US";
         recognition.interimResults = false;
@@ -1152,11 +1150,11 @@ window.onload = function() {
         recognition.addEventListener("result", speech_result);
         recognition.addEventListener("nomatch", speech_nomatch);
         recognition.addEventListener("error", speech_error);
-        SpeechParser = new JSGFParser(BridgeScoreGrammar);
+        speech_parser = new JSGFParser(BridgeScoreGrammar);
         document.getElementById("speech-button")
             .addEventListener("click", speech_start);
         /* bridge_grammar_test(); */
-    } else {
+    } catch(err) {
         document.getElementById("speech-button").style.display = "none";
     }
 
