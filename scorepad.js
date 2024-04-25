@@ -1010,6 +1010,8 @@ function speech_result(ev) {
     console.debug("speech recognition result");
     console.debug(ev.results[0][0].transcript);
     */
+    document.getElementById("speech-button")
+        .classList.remove("input-listening");
     try {
         let sr = speech_extract(speech_parser, ev.results[0][0].transcript);
         switch (sr[0]) {
@@ -1025,7 +1027,8 @@ function speech_result(ev) {
                 break;
         }
     } catch (err) {
-        alert_show("speech recognition: " + err.message, null);
+        alert_show("speech recognition: " + err.message + "<br/>" +
+                   "transcript: " + ev.results[0][0].transcript, null);
     }
 }
 
@@ -1135,13 +1138,14 @@ window.onload = function() {
         SR = window.SpeechRecognition || window.webkitSpeechRecognition;
         recognition = new SR();
         SGL = window.SpeechGrammarList || window.webkitSpeechGrammarList;
-        let sgl = new SGL();
-        /*
-        const grammar = "#JSGF V1.0; grammar bridge; public <color> = azure | beige | green";
-        sgl.addFromString(grammar, 1);
-        */
-        sgl.addFromString(BridgeScoreGrammar, 1);
-        recognition.grammar = sgl;
+        if (SGL != undefined) {
+            /* SpeechGrammarList is experimental and not always available
+             * (on any iOS browser as of 4/24/2024).  Results are bad
+             * without the grammar, so maybe we should just punt here. */
+            let sgl = new SGL();
+            sgl.addFromString(BridgeScoreGrammar, 1);
+            recognition.grammar = sgl;
+        }
         recognition.continuous = false;
         recognition.lang = "en-US";
         recognition.interimResults = false;
@@ -1155,6 +1159,7 @@ window.onload = function() {
             .addEventListener("click", speech_start);
         /* bridge_grammar_test(); */
     } catch(err) {
+        alert("speech recognition not available: " + err.message);
         document.getElementById("speech-button").style.display = "none";
     }
 
