@@ -106,6 +106,9 @@ input, select {
 }
 .ew-bg {
 }
+.missing-value {
+    color: darkgray;
+}
 .seat-name {
     /* font-size in svg seems a bit different than outside, so
      * these sizes were determined empirically */
@@ -131,19 +134,10 @@ input, select {
     padding: 0.2rem;
     border: 2px double black;
 }
-.contract-select {
+.ui-select {
     font-size: 1.6rem;
     width: 10rem;
-}
-.contract-label {
-    font-size: 1.6rem;
-}
-.result-select {
-    font-size: 1.6rem;
-    width: 10rem;
-}
-.result-label {
-    font-size: 1.6rem;
+    margin: 0.2rem
 }
 
 .input-panel {

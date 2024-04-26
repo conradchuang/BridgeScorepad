@@ -636,12 +636,33 @@ function match_redisplay(results) {
  */
 
 function contract_update(ev) {
-    if (document.getElementById("contract-level").selectedIndex == -1 ||
-        document.getElementById("contract-suit").selectedIndex == -1 ||
-        document.getElementById("contract-seat").selectedIndex == -1 ||
-        document.getElementById("contract-doubled").selectedIndex == -1)
-            return;
-    contract_show(contract_string());
+    let level = document.getElementById("contract-level");
+    let suit = document.getElementById("contract-suit");
+    let seat = document.getElementById("contract-seat");
+    let doubled = document.getElementById("contract-doubled");
+    let ready = true;
+    if (level.value == "none") {
+        level.classList.add("missing-value");
+        ready = false;
+    } else
+        level.classList.remove("missing-value");
+    if (suit.value == "none") {
+        suit.classList.add("missing-value");
+        ready = false;
+    } else
+        suit.classList.remove("missing-value");
+    if (seat.value == "none") {
+        seat.classList.add("missing-value");
+        ready = false;
+    } else
+        seat.classList.remove("missing-value");
+    if (doubled.value == "none") {
+        doubled.classList.add("missing-value");
+        ready = false;
+    } else
+        doubled.classList.remove("missing-value");
+    if (ready)
+        contract_show(contract_string());
 }
 
 function contract_string() {
@@ -705,10 +726,10 @@ function contract_focus() {
 }
 
 function contract_clear(onoff) {
-    document.getElementById("contract-level").selectedIndex = -1;
-    document.getElementById("contract-suit").selectedIndex = -1;
-    document.getElementById("contract-seat").selectedIndex = -1;
-    document.getElementById("contract-doubled").selectedIndex = -1;
+    select_reset("contract-level");
+    select_reset("contract-suit");
+    select_reset("contract-seat");
+    select_reset("contract-doubled");
 }
 
 function contract_disable(onoff) {
@@ -748,12 +769,21 @@ function result_html(result_info) {
 }
 
 function result_update(ev) {
-    if (document.getElementById("result-made").selectedIndex == -1 ||
-        document.getElementById("result-tricks").selectedIndex == -1)
-            return;
-    let made = document.getElementById("result-made").value;
-    let tricks = document.getElementById("result-tricks").value;
-    result_show(made + tricks);
+    let made = document.getElementById("result-made");
+    let tricks = document.getElementById("result-tricks");
+    let ready = true;
+    if (made.value == "none") {
+        made.classList.add("missing-value");
+        ready = false;
+    } else
+        made.classList.remove("missing-value");
+    if (tricks.value == "none") {
+        tricks.classList.add("missing-value");
+        ready = false;
+    } else
+        tricks.classList.remove("missing-value");
+    if (ready)
+        result_show(made.value + tricks.value);
 }
 
 function result_show(result) {
@@ -781,8 +811,8 @@ function result_focus() {
 }
 
 function result_clear() {
-    document.getElementById("result-made").selectedIndex = -1;
-    document.getElementById("result-tricks").selectedIndex = -1;
+    select_reset("result-made");
+    select_reset("result-tricks");
 }
 
 function result_disable(onoff) {
@@ -1080,6 +1110,12 @@ function speech_error(ev) {
 /*
  * Utility functions
  */
+
+function select_reset(eid) {
+    let e = document.getElementById(eid);
+    e.value = "none";
+    e.classList.add("missing-value");
+}
 
 function alert_show(msg, cb) {
     document.getElementById("alert-text").innerHTML = msg;

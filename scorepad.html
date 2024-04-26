@@ -209,53 +209,41 @@ C306.52,285.352,302.491,281.322,297.52,281.322z"/>
                     <tr>
                         <td class="align-right">Contract</td>
                         <td class="align-left">
-                            <select id="contract-level"
-                                    class="contract-select"
+                            <select id="contract-level" class="ui-select"
                                     name="contract-level">
-                                <optgroup class="contract-label"
-                                          label="Level">
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4">4</option>
-                                    <option value="5">5</option>
-                                    <option value="6">6</option>
-                                    <option value="7">7</option>
-                                </optgroup>
+                                <option value="none">Level</option>
+                                <option value="1" style="color:bleck;">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
                             </select>
-                            <select id="contract-suit"
-                                    class="contract-select"
+                            <select id="contract-suit" class="ui-select"
                                     name="contract-suit">
-                                <optgroup class="contract-label"
-                                          label="Suit">
-                                    <option value="N">No trump</option>
-                                    <option value="S">Spades</option>
-                                    <option value="H">Hearts</option>
-                                    <option value="D">Diamonds</option>
-                                    <option value="C">Clubs</option>
-                                </optgroup>
+                                <option value="none">Suit</option>
+                                <option value="N">No trump</option>
+                                <option value="S">Spades</option>
+                                <option value="H">Hearts</option>
+                                <option value="D">Diamonds</option>
+                                <option value="C">Clubs</option>
                             </select>
                             <br/>
-                            <select id="contract-seat"
-                                    class="contract-select"
+                            <select id="contract-seat" class="ui-select"
                                     name="contract-seat">
-                                <optgroup class="contract-label"
-                                          label="Declarer">
-                                    <option value="N">North</option>
-                                    <option value="E">East</option>
-                                    <option value="S">South</option>
-                                    <option value="W">West</option>
-                                </optgroup>
+                                <option value="none" disabled>Declarer</option>
+                                <option value="N">North</option>
+                                <option value="E">East</option>
+                                <option value="S">South</option>
+                                <option value="W">West</option>
                             </select>
-                            <select id="contract-doubled"
-                                    class="contract-select"
+                            <select id="contract-doubled" class="ui-select"
                                     name="contract-doubled">
-                                <optgroup class="contract-label"
-                                          label="Doubled">
-                                    <option value="">Undoubled</option>
-                                    <option value="x">Doubled</option>
-                                    <option value="xx">Redoubled</option>
-                                </optgroup>
+                                <option value="none">Doubled?</option>
+                                <option value="">Undoubled</option>
+                                <option value="x">Doubled</option>
+                                <option value="xx">Redoubled</option>
                             </select>
                        </td>
                         <!--
@@ -268,34 +256,28 @@ C306.52,285.352,302.491,281.322,297.52,281.322z"/>
                     <tr>
                         <td class="align-right">Result</td>
                         <td class="align-left">
-                            <select id="result-made"
-                                    class="result-select"
+                            <select id="result-made" class="ui-select"
                                     name="result-made">
-                                <optgroup class="result-label"
-                                          label="Made/Down">
-                                    <option value="+">Made</option>
-                                    <option value="-">Down</option>
-                                </optgroup>
+                                <option value="none">Made/Down</option>
+                                <option value="+">Made</option>
+                                <option value="-">Down</option>
                             </select>
-                            <select id="result-tricks"
-                                    class="result-select"
+                            <select id="result-tricks" class="ui-select"
                                     name="result-tricks">
-                                <optgroup class="result-label"
-                                          label="Tricks">
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4">4</option>
-                                    <option value="5">5</option>
-                                    <option value="6">6</option>
-                                    <option value="7">7</option>
-                                    <option value="8">8</option>
-                                    <option value="9">9</option>
-                                    <option value="10">10</option>
-                                    <option value="11">11</option>
-                                    <option value="12">12</option>
-                                    <option value="13">13</option>
-                                </optgroup>
+                                <option value="none">Tricks</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                                <option value="9">9</option>
+                                <option value="10">10</option>
+                                <option value="11">11</option>
+                                <option value="12">12</option>
+                                <option value="13">13</option>
                             </select>
                        </td>
                     </tr>
