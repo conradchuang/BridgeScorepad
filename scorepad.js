@@ -99,13 +99,11 @@ function next_hand() {
     let next_seat = NextSeat[cur_seat];
     dealer_show(next_seat);
     /* Clear contract and result fields */
-    let contract = document.getElementById("input-contract");
-    contract.value = "";
-    contract.disabled = false;
-    contract.focus();
-    let result = document.getElementById("input-result")
-    result.value = "";
-    result.disabled = true;
+    contract_clear();
+    contract_disable(false);
+    result_clear();
+    result_disable(true);
+    contract_focus();
 }
 
 function part_scores() {
@@ -282,7 +280,7 @@ function scorepad_update(contract_info, result, redisplay) {
     let suit = contract_info.suit;
     /* 0:undoubled 1:doubled 2:redoubled */
     let doubled = contract_info.doubled.length;
-    let seat = contract_info.declarer;
+    let seat = contract_info.seat;
     let side = seat.match(/[EW]/) ? "ew" : "ns";
     let tricks = parseInt(result.value);
     if (result.sign == "-")
@@ -336,9 +334,11 @@ function scorepad_update(contract_info, result, redisplay) {
             throw new RangeError("Unrecognized suit abbreviation: " + suit);
         }
         if (doubled == 1) {         /* doubled */
+            contract = contract * 2;
             overtricks = num_over * (vulnerable ? 200 : 100);
             insult = 50;
         } else if (doubled == 2) {  /* redoubled */
+            contract = contract * 4;
             overtricks = num_over * (vulnerable ? 400 : 200);
             insult = 100;
         }
@@ -584,7 +584,7 @@ function eom_show(msg) {
 function eom_close(ev) {
     ev.preventDefault();
     document.getElementById("eom-dialog").close();
-    document.getElementById("input-contract").focus();
+    contract_focus();
     Matches.push(MatchResults);
     scorepad_clear();
     next_hand();
@@ -636,10 +636,21 @@ function match_redisplay(results) {
  */
 
 function contract_update(ev) {
-    if (ev.keyCode != 13)
-        return;
-    ev.preventDefault();
-    contract_show(this.value);
+    if (document.getElementById("contract-level").selectedIndex == -1 ||
+        document.getElementById("contract-suit").selectedIndex == -1 ||
+        document.getElementById("contract-seat").selectedIndex == -1 ||
+        document.getElementById("contract-doubled").selectedIndex == -1)
+            return;
+    contract_show(contract_string());
+}
+
+function contract_string() {
+    let level = document.getElementById("contract-level").value;
+    let suit = document.getElementById("contract-suit").value;
+    let seat = document.getElementById("contract-seat").value;
+    let doubled = document.getElementById("contract-doubled").value;
+    let s = level + suit + doubled + seat;
+    return s;
 }
 
 function contract_show(contract) {
@@ -648,18 +659,19 @@ function contract_show(contract) {
         alert_show("That is not a valid contract.", contract_focus);
         return;
     }
-    document.getElementById("input-contract").value = contract_info.whole;
+    document.getElementById("contract-level").value = contract_info.level;
+    document.getElementById("contract-suit").value = contract_info.suit;
+    document.getElementById("contract-seat").value = contract_info.seat;
+    document.getElementById("contract-doubled").value = contract_info.doubled;
     /* Display final contract on board */
-    let seat = SeatAbbr[contract_info.declarer];
+    let seat = SeatAbbr[contract_info.seat];
     for (let s in NextSeat) {
         let ce = document.getElementById(s + "-contract");
         ce.innerHTML = s == seat ? contract_html(contract_info, false) : "";
     }
     /* Disable contract input and move focus to result input field */
-    let result = document.getElementById("input-result");
-    result.value = "";
-    result.disabled = false;
-    result.focus();
+    result_disable(false);
+    result_focus();
 }
 
 function contract_parse(s) {
@@ -671,15 +683,15 @@ function contract_parse(s) {
              level: parts[1],
              suit: parts[2],
              doubled: parts[3].toLowerCase(),
-             declarer: parts[4] }
+             seat: parts[4] }
 }
 
-function contract_html(contract, include_declarer) {
+function contract_html(contract, include_seat) {
     let s = [contract.level,
              SuitName[contract.suit],
              contract.doubled];
-    if (include_declarer)
-        s.push(contract.declarer);
+    if (include_seat)
+        s.push(contract.seat);
     return s.join("");
 }
 
@@ -689,11 +701,21 @@ function contract_label(deal_index, contract_info, result_info) {
 }
 
 function contract_focus() {
-    document.getElementById("input-contract").focus();
+    document.getElementById("contract-level").focus();
+}
+
+function contract_clear(onoff) {
+    document.getElementById("contract-level").selectedIndex = -1;
+    document.getElementById("contract-suit").selectedIndex = -1;
+    document.getElementById("contract-seat").selectedIndex = -1;
+    document.getElementById("contract-doubled").selectedIndex = -1;
 }
 
 function contract_disable(onoff) {
-    document.getElementById("input-contract").disabled = onoff;
+    document.getElementById("contract-level").disabled = onoff;
+    document.getElementById("contract-suit").disabled = onoff;
+    document.getElementById("contract-seat").disabled = onoff;
+    document.getElementById("contract-doubled").disabled = onoff;
 }
 
 function contract_is_game(contract_info) {
@@ -726,10 +748,12 @@ function result_html(result_info) {
 }
 
 function result_update(ev) {
-    if (ev.keyCode != 13)
-        return;
-    ev.preventDefault();
-    result_show(this.value);
+    if (document.getElementById("result-made").selectedIndex == -1 ||
+        document.getElementById("result-tricks").selectedIndex == -1)
+            return;
+    let made = document.getElementById("result-made").value;
+    let tricks = document.getElementById("result-tricks").value;
+    result_show(made + tricks);
 }
 
 function result_show(result) {
@@ -739,9 +763,9 @@ function result_show(result) {
         return;
     }
     /* Update score pad */
-    let ce = document.getElementById("input-contract");
+    let cs = contract_string();
     try {
-        scorepad_update(contract_parse(ce.value), result_info, false);
+        scorepad_update(contract_parse(cs), result_info, false);
     } catch (e) {
         if (e instanceof RangeError) {
             alert_show(e.message, result_focus);
@@ -753,7 +777,17 @@ function result_show(result) {
 }
 
 function result_focus() {
-    document.getElementById("input-result").focus();
+    document.getElementById("result-made").focus();
+}
+
+function result_clear() {
+    document.getElementById("result-made").selectedIndex = -1;
+    document.getElementById("result-tricks").selectedIndex = -1;
+}
+
+function result_disable(onoff) {
+    document.getElementById("result-made").disabled = onoff;
+    document.getElementById("result-tricks").disabled = onoff;
 }
 
 /*
@@ -868,7 +902,7 @@ function stats_collect() {
 
 function stats_collect_match(stats, match) {
     for (let hand of match) {
-        let side = SeatSide[hand.contract_info.declarer];
+        let side = SeatSide[hand.contract_info.seat];
         let made = (side == hand.winning_side);
         stats.contracts_bid[side] += 1;
         if (made)
@@ -1019,7 +1053,7 @@ function speech_result(ev) {
                 contract_show(sr[1]);
                 break;
             case "result":
-                let result = document.getElementById("input-result");
+                let result = document.getElementById("result-made");
                 if (result.disabled)
                     alert_show("Contract has not been set yet", null);
                 else
@@ -1105,10 +1139,18 @@ window.onload = function() {
         ne.addEventListener("click", edit_name);
     for (let de of document.getElementsByClassName("dealer"))
         de.addEventListener("click", dealer_update);
-    document.getElementById("input-contract")
-        .addEventListener("keydown", contract_update);
-    document.getElementById("input-result")
-        .addEventListener("keydown", result_update);
+    document.getElementById("contract-level")
+        .addEventListener("change", contract_update);
+    document.getElementById("contract-suit")
+        .addEventListener("change", contract_update);
+    document.getElementById("contract-seat")
+        .addEventListener("change", contract_update);
+    document.getElementById("contract-doubled")
+        .addEventListener("change", contract_update);
+    document.getElementById("result-made")
+        .addEventListener("change", result_update);
+    document.getElementById("result-tricks")
+        .addEventListener("change", result_update);
     document.getElementById("input-undo")
         .addEventListener("click", undo_click);
     document.getElementById("input-clear")
@@ -1134,37 +1176,45 @@ window.onload = function() {
     document.getElementById("match")
         .addEventListener("change", match_update_selected);
 
-    try {
-        SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-        recognition = new SR();
-        SGL = window.SpeechGrammarList || window.webkitSpeechGrammarList;
-        if (SGL != undefined) {
-            /* SpeechGrammarList is experimental and not always available
-             * (on any iOS browser as of 4/24/2024).  Results are bad
-             * without the grammar, so maybe we should just punt here. */
-            let sgl = new SGL();
-            sgl.addFromString(BridgeScoreGrammar, 1);
-            recognition.grammar = sgl;
+    let sb = document.getElementById("speech-button");
+    if (sb) {
+        try {
+            SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SR();
+            SGL = window.SpeechGrammarList || window.webkitSpeechGrammarList;
+            if (SGL != undefined) {
+                /* SpeechGrammarList is experimental and not always available
+                 * (on any iOS browser as of 4/24/2024).  Results are bad
+                 * without the grammar, so maybe we should just punt here. */
+                let sgl = new SGL();
+                sgl.addFromString(BridgeScoreGrammar, 1);
+                recognition.grammar = sgl;
+            }
+            recognition.continuous = false;
+            recognition.lang = "en-US";
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+            recognition.addEventListener("speechend", speech_end);
+            recognition.addEventListener("result", speech_result);
+            recognition.addEventListener("nomatch", speech_nomatch);
+            recognition.addEventListener("error", speech_error);
+            speech_parser = new JSGFParser(BridgeScoreGrammar);
+            document.getElementById("speech-button")
+                .addEventListener("click", speech_start);
+            /* bridge_grammar_test(); */
+        } catch(err) {
+            alert("speech recognition not available: " + err.message);
+            sb.style.display = "none";
         }
-        recognition.continuous = false;
-        recognition.lang = "en-US";
-        recognition.interimResults = false;
-        recognition.maxAlternatives = 1;
-        recognition.addEventListener("speechend", speech_end);
-        recognition.addEventListener("result", speech_result);
-        recognition.addEventListener("nomatch", speech_nomatch);
-        recognition.addEventListener("error", speech_error);
-        speech_parser = new JSGFParser(BridgeScoreGrammar);
-        document.getElementById("speech-button")
-            .addEventListener("click", speech_start);
-        /* bridge_grammar_test(); */
-    } catch(err) {
-        alert("speech recognition not available: " + err.message);
-        document.getElementById("speech-button").style.display = "none";
     }
 
     /* Finish setup */
     match_update();
     system_set(document.getElementById("system").value);
     dealer_show(null);
+    contract_clear();
+    contract_disable(false);
+    result_clear();
+    result_disable(true);
+    contract_focus();
 }

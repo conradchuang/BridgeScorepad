@@ -208,21 +208,95 @@ C306.52,285.352,302.491,281.322,297.52,281.322z"/>
                 <tbody>
                     <tr>
                         <td class="align-right">Contract</td>
-                        <td>
-                            <input type="text" id="input-contract"
-                                   class="input-deal" placeholder="4SxW"/>
+                        <td class="align-left">
+                            <select id="contract-level"
+                                    class="contract-select"
+                                    name="contract-level">
+                                <optgroup class="contract-label"
+                                          label="Level">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                    <option value="7">7</option>
+                                </optgroup>
+                            </select>
+                            <select id="contract-suit"
+                                    class="contract-select"
+                                    name="contract-suit">
+                                <optgroup class="contract-label"
+                                          label="Suit">
+                                    <option value="N">No trump</option>
+                                    <option value="S">Spades</option>
+                                    <option value="H">Hearts</option>
+                                    <option value="D">Diamonds</option>
+                                    <option value="C">Clubs</option>
+                                </optgroup>
+                            </select>
+                            <br/>
+                            <select id="contract-seat"
+                                    class="contract-select"
+                                    name="contract-seat">
+                                <optgroup class="contract-label"
+                                          label="Declarer">
+                                    <option value="N">North</option>
+                                    <option value="E">East</option>
+                                    <option value="S">South</option>
+                                    <option value="W">West</option>
+                                </optgroup>
+                            </select>
+                            <select id="contract-doubled"
+                                    class="contract-select"
+                                    name="contract-doubled">
+                                <optgroup class="contract-label"
+                                          label="Doubled">
+                                    <option value="">Undoubled</option>
+                                    <option value="x">Doubled</option>
+                                    <option value="xx">Redoubled</option>
+                                </optgroup>
+                            </select>
                        </td>
+                        <!--
                         <td rowspan="2">
                             <input type="button" id="speech-button"
                                    class="input-action" value="&#x1F399;"/>
                         </td>
+                        -->
                     </tr>
                     <tr>
                         <td class="align-right">Result</td>
-                        <td>
-                            <input type="text" id="input-result"
-                                   class="input-deal"
-                                   placeholder="+4" disabled/>
+                        <td class="align-left">
+                            <select id="result-made"
+                                    class="result-select"
+                                    name="result-made">
+                                <optgroup class="result-label"
+                                          label="Made/Down">
+                                    <option value="+">Made</option>
+                                    <option value="-">Down</option>
+                                </optgroup>
+                            </select>
+                            <select id="result-tricks"
+                                    class="result-select"
+                                    name="result-tricks">
+                                <optgroup class="result-label"
+                                          label="Tricks">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                    <option value="7">7</option>
+                                    <option value="8">8</option>
+                                    <option value="9">9</option>
+                                    <option value="10">10</option>
+                                    <option value="11">11</option>
+                                    <option value="12">12</option>
+                                    <option value="13">13</option>
+                                </optgroup>
+                            </select>
                        </td>
                     </tr>
                     <tr>
@@ -242,18 +316,20 @@ C306.52,285.352,302.491,281.322,297.52,281.322z"/>
             </table>
         </div>  <!-- input-panel -->
     </div>  <!-- ui-panel -->
-    <div class="match-panel">
-        <label for="match" class="match-label">Match&nbsp;</label>
-        <select id="match" class="match" name="match">
-            <optgroup id="match-group" class="match-label" label="Show Match">
-                <option value="Current" selected>Current</option>
-                <option value="27">27</option>
-            </optgroup>
-        </select>
-    </div>
     <div class="score-panel">
         <table id="scorepad" class="scorepad">
             <tbody>
+            <tr>
+                <td class="score-match-selector" colspan="2">
+                    <label for="match" class="match-label">Match&nbsp;</label>
+                    <select id="match" class="match" name="match">
+                        <optgroup id="match-group" class="match-label" label="Show Match">
+                            <option value="Current" selected>Current</option>
+                            <option value="27">27</option>
+                        </optgroup>
+                    </select>
+                </td>
+            </tr>
             <tr class="score-header">
                 <th class="align-center">North-South</th>
                 <th class="align-center">East-West</th>

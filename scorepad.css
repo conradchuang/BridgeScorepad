@@ -36,6 +36,9 @@ input, select {
 .align-center {
     text-align: center;
 }
+.align-left {
+    text-align: left;
+}
 .align-right {
     text-align: right;
 }
@@ -121,6 +124,27 @@ input, select {
 .contract {
     font-size: 1.2rem;
 }
+.contract-panel {
+    display: inline-block;
+    text-align: left;
+    vertical-align: top;
+    padding: 0.2rem;
+    border: 2px double black;
+}
+.contract-select {
+    font-size: 1.6rem;
+    width: 10rem;
+}
+.contract-label {
+    font-size: 1.6rem;
+}
+.result-select {
+    font-size: 1.6rem;
+    width: 10rem;
+}
+.result-label {
+    font-size: 1.6rem;
+}
 
 .input-panel {
     display: inline-block;
@@ -172,6 +196,11 @@ input, select {
 .scorepad > tbody > tr > th {
     width: 50%;
     border: 1px solid black;
+}
+.score-match-selector {
+    text-align: center;
+    padding-bottom: 0.5rem;
+    height: 1%;     /* 1% -- or taller if necessary */
 }
 .score-header {
     height: 1%;     /* 1% -- or taller if necessary */
