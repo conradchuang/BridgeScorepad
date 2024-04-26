@@ -103,7 +103,6 @@ function next_hand() {
     contract_disable(false);
     result_clear();
     result_disable(true);
-    contract_focus();
 }
 
 function part_scores() {
@@ -584,7 +583,6 @@ function eom_show(msg) {
 function eom_close(ev) {
     ev.preventDefault();
     document.getElementById("eom-dialog").close();
-    contract_focus();
     Matches.push(MatchResults);
     scorepad_clear();
     next_hand();
@@ -677,7 +675,7 @@ function contract_string() {
 function contract_show(contract) {
     let contract_info = contract_parse(contract);
     if (contract_info == null) {
-        alert_show("That is not a valid contract.", contract_focus);
+        alert_show("That is not a valid contract.", null);
         return;
     }
     document.getElementById("contract-level").value = contract_info.level;
@@ -690,9 +688,7 @@ function contract_show(contract) {
         let ce = document.getElementById(s + "-contract");
         ce.innerHTML = s == seat ? contract_html(contract_info, false) : "";
     }
-    /* Disable contract input and move focus to result input field */
     result_disable(false);
-    result_focus();
 }
 
 function contract_parse(s) {
@@ -719,10 +715,6 @@ function contract_html(contract, include_seat) {
 function contract_label(deal_index, contract_info, result_info) {
     return (deal_index+1) + ": " + contract_html(contract_info, true) +
            result_html(result_info);
-}
-
-function contract_focus() {
-    document.getElementById("contract-level").focus();
 }
 
 function contract_clear(onoff) {
@@ -798,16 +790,12 @@ function result_show(result) {
         scorepad_update(contract_parse(cs), result_info, false);
     } catch (e) {
         if (e instanceof RangeError) {
-            alert_show(e.message, result_focus);
+            alert_show(e.message, null);
             return;
         } else {
             throw e;
         }
     }
-}
-
-function result_focus() {
-    document.getElementById("result-made").focus();
 }
 
 function result_clear() {
@@ -1252,5 +1240,4 @@ window.onload = function() {
     contract_disable(false);
     result_clear();
     result_disable(true);
-    contract_focus();
 }
