@@ -668,9 +668,6 @@ function contract_string() {
     let suit = document.getElementById("contract-suit").value;
     let seat = document.getElementById("contract-seat").value;
     let doubled = document.getElementById("contract-doubled").value;
-    /* Replace select - CH
-    let s = level + suit + doubled + seat;
-    */
     let s = [level, suit, doubled, seat].join(' ');
     return s;
 }
@@ -1197,18 +1194,6 @@ window.onload = function() {
                                     ["Made?", "Made", "Down"],
                                     ["none", "+", "-"],
                                     result_update);
-    /* Replace select - CH
-    document.getElementById("contract-level")
-        .addEventListener("change", contract_update);
-    document.getElementById("contract-suit")
-        .addEventListener("change", contract_update);
-    document.getElementById("contract-seat")
-        .addEventListener("change", contract_update);
-    document.getElementById("contract-doubled")
-        .addEventListener("change", contract_update);
-    document.getElementById("result-made")
-        .addEventListener("change", result_update);
-    */
     document.getElementById("result-tricks")
         .addEventListener("change", result_update);
     document.getElementById("input-undo")
