@@ -5,6 +5,7 @@
 <meta charset="utf-8"/>
 <title>Bridge Score Pad</title>
 <link rel="stylesheet" type="text/css" href="scorepad.css"/>
+<script src="optionbox.js"></script>
 <script src="scorepad.js"></script>
 <script src="jsgfparser.js"></script>
 <script src="grammar.js"></script>
@@ -209,6 +210,21 @@ C306.52,285.352,302.491,281.322,297.52,281.322z"/>
                     <tr>
                         <td class="align-right">Contract</td>
                         <td class="align-left">
+                            <button id="contract-level" class="ui-select">
+                            </button>
+                            <button id="contract-suit" class="ui-select">
+                            </button>
+                            <br/>
+                            <button id="contract-seat" class="ui-select">
+                            </button>
+                            <button id="contract-doubled" class="ui-select">
+                            </button>
+                        </td>
+                    </tr>
+                    <!-- Replace select - CH
+                    <tr>
+                        <td class="align-right">Contract</td>
+                        <td class="align-left">
                             <select id="contract-level" class="ui-select"
                                     name="contract-level">
                                 <option value="none">Level</option>
@@ -246,13 +262,39 @@ C306.52,285.352,302.491,281.322,297.52,281.322z"/>
                                 <option value="xx">Redoubled</option>
                             </select>
                        </td>
-                        <!--
-                        <td rowspan="2">
+                    </tr>
+                    -->
+                    <!-- Save in case natural language improves
+                       <td rowspan="2">
                             <input type="button" id="speech-button"
                                    class="input-action" value="&#x1F399;"/>
+                       </td>
+                    -->
+                    <tr>
+                        <td class="align-right">Result</td>
+                        <td class="align-left">
+                            <button id="result-made" class="ui-select">
+                            </button>
+                            <select id="result-tricks" class="ui-select"
+                                    name="result-tricks">
+                                <option value="none">Tricks</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                                <option value="9">9</option>
+                                <option value="10">10</option>
+                                <option value="11">11</option>
+                                <option value="12">12</option>
+                                <option value="13">13</option>
+                            </select>
                         </td>
-                        -->
                     </tr>
+                    <!-- Replace select - CH
                     <tr>
                         <td class="align-right">Result</td>
                         <td class="align-left">
@@ -281,6 +323,7 @@ C306.52,285.352,302.491,281.322,297.52,281.322z"/>
                             </select>
                        </td>
                     </tr>
+                    -->
                     <tr>
                         <td>&nbsp;</td>
                     </tr>

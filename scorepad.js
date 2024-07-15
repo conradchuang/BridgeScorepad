@@ -668,13 +668,17 @@ function contract_string() {
     let suit = document.getElementById("contract-suit").value;
     let seat = document.getElementById("contract-seat").value;
     let doubled = document.getElementById("contract-doubled").value;
+    /* Replace select - CH
     let s = level + suit + doubled + seat;
+    */
+    let s = [level, suit, doubled, seat].join(' ');
     return s;
 }
 
 function contract_show(contract) {
     let contract_info = contract_parse(contract);
     if (contract_info == null) {
+        console.log(contract);
         alert_show("That is not a valid contract.", null);
         return;
     }
@@ -718,10 +722,10 @@ function contract_label(deal_index, contract_info, result_info) {
 }
 
 function contract_clear(onoff) {
-    select_reset("contract-level");
-    select_reset("contract-suit");
-    select_reset("contract-seat");
-    select_reset("contract-doubled");
+    optionbox_reset("contract-level");
+    optionbox_reset("contract-suit");
+    optionbox_reset("contract-seat");
+    optionbox_reset("contract-doubled");
 }
 
 function contract_disable(onoff) {
@@ -799,7 +803,7 @@ function result_show(result) {
 }
 
 function result_clear() {
-    select_reset("result-made");
+    optionbox_reset("result-made");
     select_reset("result-tricks");
 }
 
@@ -1099,6 +1103,12 @@ function speech_error(ev) {
  * Utility functions
  */
 
+function optionbox_reset(eid) {
+    let e = document.getElementById(eid);
+    e.classList.add("missing-value");
+    e.dispatchEvent(new Event("reset"));
+}
+
 function select_reset(eid) {
     let e = document.getElementById(eid);
     e.value = "none";
@@ -1163,6 +1173,31 @@ window.onload = function() {
         ne.addEventListener("click", edit_name);
     for (let de of document.getElementsByClassName("dealer"))
         de.addEventListener("click", dealer_update);
+    var contract_level = new OptionBox("contract-level",
+                                       ["Level", "1", "2", "3", "4",
+                                        "5", "6", "7"],
+                                       ["none",  "1", "2", "3", "4",
+                                        "5", "6", "7"],
+                                       contract_update);
+    var contract_suit = new OptionBox("contract-suit",
+                                     ["Suit", "No trump", "Spades",
+                                      "Hearts", "Diamonds", "Clubs"],
+                                     ["none", "N", "S", "H", "D", "C"],
+                                     contract_update);
+    var contract_seat = new OptionBox("contract-seat",
+                                     ["Seat", "North", "East", "South", "West"],
+                                     ["none", "N", "E", "S", "W"],
+                                     contract_update);
+    var contract_doubled = new OptionBox("contract-doubled",
+                                         ["Doubled?", "Undoubled",
+                                          "Doubled", "Redoubled"],
+                                         ["none", "", "x", "xx"],
+                                         contract_update);
+    var result_made = new OptionBox("result-made",
+                                    ["Made?", "Made", "Down"],
+                                    ["none", "+", "-"],
+                                    result_update);
+    /* Replace select - CH
     document.getElementById("contract-level")
         .addEventListener("change", contract_update);
     document.getElementById("contract-suit")
@@ -1173,6 +1208,7 @@ window.onload = function() {
         .addEventListener("change", contract_update);
     document.getElementById("result-made")
         .addEventListener("change", result_update);
+    */
     document.getElementById("result-tricks")
         .addEventListener("change", result_update);
     document.getElementById("input-undo")
