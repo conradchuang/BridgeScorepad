@@ -675,7 +675,7 @@ function contract_string() {
 function contract_show(contract) {
     let contract_info = contract_parse(contract);
     if (contract_info == null) {
-        console.log(contract);
+        /* console.log(contract); */
         alert_show("That is not a valid contract.", null);
         return;
     }
@@ -892,6 +892,12 @@ function stats_click(ev) {
     stats_add_row(stbe, "Grand Slams", "",
                   stats.grand_slams_bid.ns, stats.grand_slams_made.ns,
                   stats.grand_slams_bid.ew, stats.grand_slams_made.ew);
+    let sstbe = document.getElementById("stats-seat-table-body");
+    stats_seat_add_row(sstbe, "Contracts", "",
+                  stats.seat_bid.N, stats.seat_made.N,
+                  stats.seat_bid.S, stats.seat_made.S,
+                  stats.seat_bid.E, stats.seat_made.E,
+                  stats.seat_bid.W, stats.seat_made.W);
     document.getElementById("stats-dialog").showModal();
 }
 
@@ -912,6 +918,8 @@ function stats_collect() {
         small_slams_made: { ns:0, ew:0 },
         grand_slams_bid: { ns:0, ew:0 },
         grand_slams_made: { ns:0, ew:0 },
+        seat_bid: { N:0, S:0, E:0, W:0 },
+        seat_made: { N:0, S:0, E:0, W:0 },
     }
     for (let match of Matches)
         stats_collect_match(stats, match);
@@ -924,8 +932,11 @@ function stats_collect_match(stats, match) {
         let side = SeatSide[hand.contract_info.seat];
         let made = (side == hand.winning_side);
         stats.contracts_bid[side] += 1;
-        if (made)
+        stats.seat_bid[hand.contract_info.seat] += 1;
+        if (made) {
             stats.contracts_made[side] += 1;
+            stats.seat_made[hand.contract_info.seat] += 1;
+        }
         if (contract_is_game(hand.contract_info)) {
             stats.games_bid[side] += 1;
             if (made)
@@ -951,24 +962,38 @@ function stats_collect_match(stats, match) {
 function stats_add_row(tbe, label, klass, ns_bid, ns_made, ew_bid, ew_made) {
     let tr = document.createElement("tr");
     tbe.appendChild(tr);
+    _stats_add_label(tr, label, klass);
+    _stats_add_value(tr, klass, ns_made, ns_bid);
+    _stats_add_value(tr, klass, ew_made, ew_bid);
+}
+
+function _stats_add_label(tr, label, klass) {
     let le = document.createElement("th");
     le.classList.add("stats-label");
     if (klass)
         le.classList.add(klass);
     le.innerHTML = label;
     tr.appendChild(le);
-    let nse = document.createElement("td");
-    nse.classList.add("stats-value");
+}
+
+function _stats_add_value(tr, klass, bid, made) {
+    let e = document.createElement("td");
+    e.classList.add("stats-value");
     if (klass)
-        nse.classList.add(klass);
-    nse.innerHTML = ns_made + '/' + ns_bid;
-    tr.appendChild(nse);
-    let ewe = document.createElement("td");
-    ewe.classList.add("stats-value");
-    if (klass)
-        ewe.classList.add(klass);
-    ewe.innerHTML = ew_made + '/' + ew_bid;
-    tr.appendChild(ewe);
+        e.classList.add(klass);
+    e.innerHTML = made + '/' + bid;
+    tr.appendChild(e);
+}
+
+function stats_seat_add_row(tbe, label, klass, n_bid, n_made, s_bid, s_made,
+                            e_bid, e_made, w_bid, w_made) {
+    let tr = document.createElement("tr");
+    tbe.appendChild(tr);
+    _stats_add_label(tr, label, klass);
+    _stats_add_value(tr, klass, n_made, n_bid);
+    _stats_add_value(tr, klass, s_made, s_bid);
+    _stats_add_value(tr, klass, e_made, e_bid);
+    _stats_add_value(tr, klass, w_made, w_bid);
 }
 
 /*
