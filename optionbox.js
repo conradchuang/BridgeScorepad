@@ -40,7 +40,6 @@ class OptionBox {
     }
 
     cb_click(ev) {
-        console.log("click");
         let bbox = ev.target.getBoundingClientRect();
         let e_x = ev.clientX - bbox.left;
         if (e_x < bbox.width / 2)
@@ -51,7 +50,6 @@ class OptionBox {
     }
 
     cb_reset(ev) {
-        console.log("reset");
         this.set(0);
     }
 
