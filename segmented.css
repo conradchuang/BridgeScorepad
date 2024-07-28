@@ -1,0 +1,33 @@
+/* vim: set ai et sw=4 sts=4: */
+
+.segmented-control-table {
+    table-layout: fixed;
+    width: 100%;
+    border-spacing: 0rem 0.2rem;
+}
+
+.segmented-control-tr {
+}
+
+.segmented-control-td {
+    color: black;
+    background-color: lightgray;
+    text-align: center;
+    border-left: solid 1px darkgray;
+}
+
+.segmented-control-td:first-child {
+    border-top-left-radius: 0.4rem;
+    border-bottom-left-radius: 0.4rem;
+    border-left: solid 0px darkgray;
+}
+
+.segmented-control-td:last-child {
+    border-top-right-radius: 0.4rem;
+    border-bottom-right-radius: 0.4rem;
+}
+
+.segmented-control-selected {
+    color: black;
+    background-color: darkgray;
+}

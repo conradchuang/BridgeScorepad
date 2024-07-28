@@ -1195,30 +1195,33 @@ window.onload = function() {
         ne.addEventListener("click", edit_name);
     for (let de of document.getElementsByClassName("dealer"))
         de.addEventListener("click", dealer_update);
-    var contract_level = new OptionBox("contract-level",
-                                       ["Level", "1", "2", "3", "4",
-                                        "5", "6", "7"],
-                                       ["none",  "1", "2", "3", "4",
-                                        "5", "6", "7"],
-                                       contract_update);
-    var contract_suit = new OptionBox("contract-suit",
-                                     ["Suit", "No trump", "Spades",
-                                      "Hearts", "Diamonds", "Clubs"],
-                                     ["none", "N", "S", "H", "D", "C"],
-                                     contract_update);
-    var contract_seat = new OptionBox("contract-seat",
-                                     ["Seat", "North", "East", "South", "West"],
-                                     ["none", "N", "E", "S", "W"],
-                                     contract_update);
-    var contract_doubled = new OptionBox("contract-doubled",
-                                         ["Doubled?", "Undoubled",
-                                          "Doubled", "Redoubled"],
-                                         ["none", "", "x", "xx"],
-                                         contract_update);
-    var result_made = new OptionBox("result-made",
-                                    ["Made?", "Made", "Down"],
-                                    ["none", "+", "-"],
-                                    result_update);
+    var contract_level = new SegmentedControl(
+                                "ui-contract", "contract-level",
+                                ["Level", "1", "2", "3", "4", "5", "6", "7"],
+                                ["none",  "1", "2", "3", "4", "5", "6", "7"],
+                                contract_update);
+    var contract_suit = new SegmentedControl(
+                                "ui-contract", "contract-suit",
+                                ["Suit", "No trump", "Spades",
+                                 "Hearts", "Diamonds", "Clubs"],
+                                ["none", "N", "S", "H", "D", "C"],
+                                contract_update);
+    var contract_seat = new SegmentedControl(
+                                "ui-contract", "contract-seat",
+                                ["Seat", "North", "East", "South", "West"],
+                                ["none", "N", "E", "S", "W"],
+                                contract_update);
+    var contract_doubled = new SegmentedControl(
+                                "ui-contract", "contract-doubled",
+                                ["Doubled?", "Undoubled",
+                                 "Doubled", "Redoubled"],
+                                ["none", "", "x", "xx"],
+                                contract_update);
+    var result_made = new SegmentedControl(
+                                "ui-result", "result-made",
+                                ["Made?", "Made", "Down"],
+                                ["none", "+", "-"],
+                                result_update);
     document.getElementById("result-tricks")
         .addEventListener("change", result_update);
     document.getElementById("input-undo")

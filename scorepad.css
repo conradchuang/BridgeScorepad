@@ -134,13 +134,16 @@ input, select {
     padding: 0.2rem;
     border: 2px double black;
 }
+.ui-contract {
+    font-size: 1.6rem;
+    width: 35rem;
+}
 .ui-select {
+    display: inline-block;
+    vertical-align: middle;
     font-size: 1.6rem;
     width: 10rem;
     margin: 0.2rem;
-}
-.ui-optionbox {
-    background: linear-gradient(to right, lightgray, darkgray);
 }
 
 .input-panel {

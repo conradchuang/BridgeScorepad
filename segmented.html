@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<!-- vim: set ai et sw=4 sts=4: -->
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Segmented Control Test</title>
+<link rel="stylesheet" type="text/css" href="segmented.css"/>
+<style>
+.app-div {
+    width: 100%;
+}
+</style>
+<script src="segmented.js"></script>
+<script>
+var opts1 = ["Level", "1", "2", "3", "4", "5", "6", "7"];
+var vals1 = ["none", "1", "2", "3", "4", "5", "6", "7"];
+var opts2 = ["Suit", "No Trump", "Spades", "Hearts", "Diamonds", "Clubs"];
+var vals2 = ["none", "N", "S", "H", "D", "C"];
+var sc1, sc2;
+
+function cb1() {
+    console.log("cb1: " + sc1.val());
+}
+
+function cb2() {
+    console.log("cb2: " + sc2.val());
+}
+
+window.onload = function() {
+    sc1 = new SegmentedControl("app", "sc1", opts1, vals1, cb1);
+    sc2 = new SegmentedControl("app", "sc2", opts2, vals2, cb2);
+}
+</script>
+</head>
+<body>
+<div id="app" class="app-div">
+</div>
+</body>
+</html>
