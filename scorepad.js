@@ -638,28 +638,8 @@ function contract_update(ev) {
     let suit = document.getElementById("contract-suit");
     let seat = document.getElementById("contract-seat");
     let doubled = document.getElementById("contract-doubled");
-    let ready = true;
-    if (level.value == "none") {
-        level.classList.add("missing-value");
-        ready = false;
-    } else
-        level.classList.remove("missing-value");
-    if (suit.value == "none") {
-        suit.classList.add("missing-value");
-        ready = false;
-    } else
-        suit.classList.remove("missing-value");
-    if (seat.value == "none") {
-        seat.classList.add("missing-value");
-        ready = false;
-    } else
-        seat.classList.remove("missing-value");
-    if (doubled.value == "none") {
-        doubled.classList.add("missing-value");
-        ready = false;
-    } else
-        doubled.classList.remove("missing-value");
-    if (ready)
+    if (level.value != "none" && suit.value != "none"
+            && seat.value != "none" && doubled.value != "none")
         contract_show(contract_string());
 }
 
@@ -719,10 +699,10 @@ function contract_label(deal_index, contract_info, result_info) {
 }
 
 function contract_clear(onoff) {
-    optionbox_reset("contract-level");
-    optionbox_reset("contract-suit");
-    optionbox_reset("contract-seat");
-    optionbox_reset("contract-doubled");
+    options_reset("contract-level");
+    options_reset("contract-suit");
+    options_reset("contract-seat");
+    options_reset("contract-doubled");
 }
 
 function contract_disable(onoff) {
@@ -765,17 +745,7 @@ function result_update(ev) {
     let made = document.getElementById("result-made");
     let tricks = document.getElementById("result-tricks");
     let ready = true;
-    if (made.value == "none") {
-        made.classList.add("missing-value");
-        ready = false;
-    } else
-        made.classList.remove("missing-value");
-    if (tricks.value == "none") {
-        tricks.classList.add("missing-value");
-        ready = false;
-    } else
-        tricks.classList.remove("missing-value");
-    if (ready)
+    if (made.value != "none" && tricks.value != "none")
         result_show(made.value + tricks.value);
 }
 
@@ -800,7 +770,7 @@ function result_show(result) {
 }
 
 function result_clear() {
-    optionbox_reset("result-made");
+    options_reset("result-made");
     select_reset("result-tricks");
 }
 
@@ -1125,16 +1095,12 @@ function speech_error(ev) {
  * Utility functions
  */
 
-function optionbox_reset(eid) {
-    let e = document.getElementById(eid);
-    e.classList.add("missing-value");
-    e.dispatchEvent(new Event("reset"));
+function options_reset(eid) {
+    document.getElementById(eid).dispatchEvent(new Event("reset"));
 }
 
 function select_reset(eid) {
-    let e = document.getElementById(eid);
-    e.value = "none";
-    e.classList.add("missing-value");
+    document.getElementById(eid).value = "none";
 }
 
 function alert_show(msg, cb) {

@@ -111,9 +111,6 @@ input, select {
 }
 .ew-bg {
 }
-.missing-value {
-    color: darkgray;
-}
 .seat-name {
     /* font-size in svg seems a bit different than outside, so
      * these sizes were determined empirically */
