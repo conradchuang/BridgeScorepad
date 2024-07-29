@@ -25,9 +25,10 @@
     </div>
     <div class="ui-panel">
         <div class="table-panel">
-            <svg class="diagram" viewbox="0 0 100 100">
-                <defs>
-                <path id="cards" d="
+            <div class="svg-container">
+                <svg class="diagram" viewbox="0 0 100 100">
+                    <defs>
+                    <path id="cards" d="
 M463.164,146.031
 l-77.369,288.746
 c-1.677,6.26-7.362,10.4-13.556,10.401
@@ -144,61 +145,62 @@ c0,4.971,4.029,9,9,9
 s9-4.029,9-9
 v-8.565
 C306.52,285.352,302.491,281.322,297.52,281.322z"/>
-    </defs>
+                    </defs>
 
-                <!-- backgrounds for each hand, colored for vulnerability -->
-                <polygon id="north-bg" class="ns-bg nonvul"
-                         points="0,0 100,0 50,50"/>
-                <polygon id="south-bg" class="ns-bg nonvul"
-                         points="0,100 100,100 50,50"/>
-                <polygon id="east-bg" class="ew-bg nonvul"
-                         points="100,0 100,100 50,50"/>
-                <polygon id="west-bg" class="ew-bg nonvul"
-                         points="0,0 0,100 50,50"/>
+                    <!-- backgrounds for each hand, colored for vulnerability -->
+                    <polygon id="north-bg" class="ns-bg nonvul"
+                             points="0,0 100,0 50,50"/>
+                    <polygon id="south-bg" class="ns-bg nonvul"
+                             points="0,100 100,100 50,50"/>
+                    <polygon id="east-bg" class="ew-bg nonvul"
+                             points="100,0 100,100 50,50"/>
+                    <polygon id="west-bg" class="ew-bg nonvul"
+                             points="0,0 0,100 50,50"/>
 
-                <!-- lines separating hands -->
-                <rect class="grid-border" width="100" height="100" x="0" y="0"/>
-                <line class="grid" x1="0" y1="0" x2="100" y2="100"/>
-                <line class="grid" x1="100" y1="0" x2="0" y2="100"/>
+                    <!-- lines separating hands -->
+                    <rect class="grid-border" width="100" height="100" x="0" y="0"/>
+                    <line class="grid" x1="0" y1="0" x2="100" y2="100"/>
+                    <line class="grid" x1="100" y1="0" x2="0" y2="100"/>
 
-                <!-- seat names (north, south, east, west) -->
-                <text class="seat-name" text-anchor="middle" seat="north"
-                      x="50" y="3" transform="rotate(180 50,3)">
-                      North<tspan id="north-name"/></text>
-                <text class="seat-name" text-anchor="middle" seat="east"
-                      x="97" y="50" transform="rotate(-90 97,50)">
-                      East<tspan id="east-name"/></text>
-                <text class="seat-name" text-anchor="middle" seat="south"
-                      x="50" y="97" transform="rotate(0 50,97)">
-                      South<tspan id="south-name"/></text>
-                <text class="seat-name" text-anchor="middle" seat="west"
-                      x="3" y="50" transform="rotate(90 3,50)">
-                      West<tspan id="west-name"/></text>
+                    <!-- seat names (north, south, east, west) -->
+                    <text class="seat-name" text-anchor="middle" seat="north"
+                          x="50" y="3" transform="rotate(180 50,3)">
+                          North<tspan id="north-name"/></text>
+                    <text class="seat-name" text-anchor="middle" seat="east"
+                          x="97" y="50" transform="rotate(-90 97,50)">
+                          East<tspan id="east-name"/></text>
+                    <text class="seat-name" text-anchor="middle" seat="south"
+                          x="50" y="97" transform="rotate(0 50,97)">
+                          South<tspan id="south-name"/></text>
+                    <text class="seat-name" text-anchor="middle" seat="west"
+                          x="3" y="50" transform="rotate(90 3,50)">
+                          West<tspan id="west-name"/></text>
 
-                <!-- part score during bidding or final contract -->
-                <text id="north-contract" class="contract" text-anchor="middle"
-                      x="50" y="15" transform="rotate(180 50,15)">North</text>
-                <text id="east-contract" class="contract" text-anchor="middle"
-                      x="85" y="50" transform="rotate(-90 85,50)">East</text>
-                <text id="south-contract" class="contract" text-anchor="middle"
-                      x="50" y="85" transform="rotate(0 50,85)">South</text>
-                <text id="west-contract" class="contract" text-anchor="middle"
-                      x="15" y="50" transform="rotate(90 15,50)">West</text>
+                    <!-- part score during bidding or final contract -->
+                    <text id="north-contract" class="contract" text-anchor="middle"
+                          x="50" y="15" transform="rotate(180 50,15)">North</text>
+                    <text id="east-contract" class="contract" text-anchor="middle"
+                          x="85" y="50" transform="rotate(-90 85,50)">East</text>
+                    <text id="south-contract" class="contract" text-anchor="middle"
+                          x="50" y="85" transform="rotate(0 50,85)">South</text>
+                    <text id="west-contract" class="contract" text-anchor="middle"
+                          x="15" y="50" transform="rotate(90 15,50)">West</text>
 
-                <!-- dealer icon -->
-                <use id="north-dealer" class="dealer dealing" href="#cards"
-                     name="dealing" seat="north"
-                     transform="translate(31,20) rotate(180 12,12) scale(0.025)"/>
-                <use id="east-dealer" class="dealer" href="#cards"
-                     name="dealing" seat="east"
-                     transform="translate(56,31) rotate(-90 12,12) scale(0.025)"/>
-                <use id="south-dealer" class="dealer" href="#cards"
-                     name="dealing" seat="south"
-                     transform="translate(45,56) scale(0.025)"/>
-                <use id="west-dealer" class="dealer" href="#cards"
-                     name="dealing" seat="west"
-                     transform="translate(20,45) rotate(90 12,12) scale(0.025)"/>
-            </svg>
+                    <!-- dealer icon -->
+                    <use id="north-dealer" class="dealer dealing" href="#cards"
+                         name="dealing" seat="north"
+                         transform="translate(31,20) rotate(180 12,12) scale(0.025)"/>
+                    <use id="east-dealer" class="dealer" href="#cards"
+                         name="dealing" seat="east"
+                         transform="translate(56,31) rotate(-90 12,12) scale(0.025)"/>
+                    <use id="south-dealer" class="dealer" href="#cards"
+                         name="dealing" seat="south"
+                         transform="translate(45,56) scale(0.025)"/>
+                    <use id="west-dealer" class="dealer" href="#cards"
+                         name="dealing" seat="west"
+                         transform="translate(20,45) rotate(90 12,12) scale(0.025)"/>
+                </svg>
+            </div>
         </div>  <!-- table-panel -->
         <div class="input-panel">
             <table class="ui-table">
@@ -220,8 +222,8 @@ C306.52,285.352,302.491,281.322,297.52,281.322z"/>
                     -->
                     <tr>
                         <td class="align-right">Result</td>
-                        <td class="align-left">
-                            <span id="ui-result" class="ui-select"></span>
+                        <td class="align-left ui-contract">
+                            <div id="ui-result" class="ui-select"></div>
                             <select id="result-tricks" class="ui-select"
                                     name="result-tricks">
                                 <option value="none">Tricks</option>

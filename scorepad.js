@@ -1202,8 +1202,8 @@ window.onload = function() {
                                 contract_update);
     var contract_suit = new SegmentedControl(
                                 "ui-contract", "contract-suit",
-                                ["Suit", "No trump", "Spades",
-                                 "Hearts", "Diamonds", "Clubs"],
+                                ["Suit", "NT", SuitName["S"],
+                                 SuitName["H"], SuitName["D"], SuitName["C"]],
                                 ["none", "N", "S", "H", "D", "C"],
                                 contract_update);
     var contract_seat = new SegmentedControl(

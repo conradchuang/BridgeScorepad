@@ -75,6 +75,11 @@ input, select {
     height: 100%;
     flex-grow: 0;
 }
+.svg-container {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
 .diagram {
     width: 100%;
     height: auto;
@@ -136,14 +141,14 @@ input, select {
 }
 .ui-contract {
     font-size: 1.6rem;
-    width: 35rem;
+    width: 30rem;
+    padding-left: 0.5rem;
 }
 .ui-select {
     display: inline-block;
     vertical-align: middle;
     font-size: 1.6rem;
     width: 10rem;
-    margin: 0.2rem;
 }
 
 .input-panel {
