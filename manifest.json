@@ -1,0 +1,12 @@
+{
+  "name": "Bridge Scorepad",
+  "start_url": "/scorepad.html",
+  "icons": [
+    {
+      "src": "icon.ico",
+      "sizes": "48x48",
+      "type": "image/webp"
+    }
+  ],
+  "display": "standalone"
+}
